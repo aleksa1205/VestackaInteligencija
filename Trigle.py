@@ -103,6 +103,10 @@ def razvuci_gumicu(stub1, stub2, graf, space):
         pygame.draw.line(win, BLACK, c1, c2, 2)
         pygame.draw.line(win, BLACK, c2, stub2, 2)
 
+        detektuj_trougao(stub1, c1, graf, 20)
+        detektuj_trougao(c1, c2, graf, 20)
+        detektuj_trougao(c2, stub2, graf, 20)
+
 def detektuj_trougao(stub1, stub2, graf, space):
     if stub1 in graf[stub2]:
         for stub3 in graf[stub1]:
@@ -111,11 +115,19 @@ def detektuj_trougao(stub1, stub2, graf, space):
                 return True
     return False
 
-
 def pocetno_stanje(n):
     space = 20
     start = 100
     nacrtaj_tablu(n, space, start)
+    graf = napravi_graf(koordinate)
+    return graf
+
+#ova treba da se zavrsi, uzeto je u obzir samo kad su svi formirani ali nmg vise glavobolja <3
+def kraj_igre(graf):
+    for i in graf:
+        if len(graf[i]) == 3:
+            print("Svi troulici su formirani.")
+            return True
 
 
 screen = WIDTH, HEIGHT = 600, 600
@@ -135,15 +147,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    pocetno_stanje(6)
-    graf = napravi_graf(koordinate)
-    #razvuci_gumicu((100, 40), (70, 100), graf, 20)
-    #razvuci_gumicu((100, 40), (130, 100), graf, 20)
-    #razvuci_gumicu((90, 60), (150, 60), graf, 20)
-    #razvuci_gumicu((100, 40), (160, 40), graf, 20)
-    #razvuci_gumicu((120, 40), (90, 100), graf, 20)
-    #detektuj_trougao((100, 40), (90, 60), graf, 20)
-    #detektuj_trougao((100, 40), (120, 40), graf, 20)
+    graf = pocetno_stanje(4)
+    razvuci_gumicu((100, 40), (70, 100), graf, 20)
+    razvuci_gumicu((120, 40), (90, 100), graf, 20)
+    razvuci_gumicu((100, 40), (130, 100), graf, 20)
+    razvuci_gumicu((90, 60), (150, 60), graf, 20)
+    razvuci_gumicu((100, 40), (160, 40), graf, 20)
+
     pygame.display.update()
 
 pygame.quit()
