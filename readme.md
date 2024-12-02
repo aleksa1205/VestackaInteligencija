@@ -46,3 +46,17 @@ Igrač koji je poslednji odigrao taj potez dobija onoliko bodova koliko je troug
 
 Pamti se *set* puteva u grafu kako bi smo proverili ispravnost sledećeg poteza.
 Ako se unese put koji već postoji potez je neispravan.
+
+#### Funkcije ispitivanja
+*in_boundaries* ispituje da li smo izašli iz opsega matrice i ako jesmo vraća False.
+*check_length* proverava da li je udaljenost između dva prosleđena stuba 3 da bi znali da li smemo da povučemo poteg.
+*end_game* proverava da li je došlo do kraja igre i ako jeste ko je pobedio.
+
+#### Funkcije za pomeranje
+Funkcije *desno*, *dole_desno* i *dole_levo* izvršavaju poteze.
+Funkcija *make_move* kao parametre ima startni i ciljni čvor. Ona polazi od čvora *start* i ide u svim mogućim smerovima (desno, dole levo i dole desno) i proveri da li je nekim od tih puteva stigao do čvora *end*. Ako jeste došao do njega i taj put već nije korišćen da se dođe do tog čvora dodaje se u set puteva, ažurira se graf i crta se linija.
+Funkcija *make_move_tournament* ima sličnu funkcionalnost kao i funkcija *make_move* samo što odgovara formatu koji je dat na prezentaciji.
+Funkcija *find_triangle* traži ciklus dužine 3 i ako ga nađe i on nije već uzet od starne nekog od igrača dodaje ga trenutno aktivnom igraču i crta trougao.
+
+#### Pomoćne funkcije
+U fajlu *draw.py* su samo pomoćne funkcije za iscrtavanje koje ne bi imalo potrebe objašnjavati dodatno.
