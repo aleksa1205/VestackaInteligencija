@@ -1,5 +1,8 @@
 ﻿import pygame
 
+from src.Trigle import pocetno_stanje, razvuci_gumicu
+
+
 def game_menu(n, plays_first):
     screen = pygame.display.get_surface()
     clock = pygame.time.Clock()
@@ -14,6 +17,13 @@ def game_menu(n, plays_first):
                 pygame.quit()
                 exit()
         screen.fill('#DCDDD8')
+
+        graf = pocetno_stanje(n)
+        razvuci_gumicu((100, 40), (70, 100), graf, 20)
+        razvuci_gumicu((120, 40), (90, 100), graf, 20)
+        razvuci_gumicu((100, 40), (130, 100), graf, 20)
+        razvuci_gumicu((90, 60), (150, 60), graf, 20)
+        razvuci_gumicu((100, 40), (160, 40), graf, 20)
 
         pygame.display.update()
         clock.tick(60)
