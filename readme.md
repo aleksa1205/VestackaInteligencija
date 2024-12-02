@@ -3,6 +3,8 @@
 # NAPOMENA
 **Član tima kod koga se nalazi source kod za logiku aplikacije se uspavao i nije poslao kod. U ovom dokumentu se trenutno nalazi stara logika aplikacije i UI. Ostatak aplikacije mozemo da pošaljemo sutra.**
 
+GitHub link projekta: https://github.com/aleksa1205/VestackaInteligencija
+
 ## Zadatak I
 
 ### UI
