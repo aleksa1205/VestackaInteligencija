@@ -33,7 +33,11 @@ def draw_line(start, end):
 def draw_triangles():
     # resetujemo na nula jer se trouglici u svakom potezu crtaju opet
     # moze da se promeni da imamo po jos jedan set koji ce da sadrzi nacrtane trouglove
-    g.player1_points = 0 if g.currentPlayer else g.player2_points = 0
+    if g.currentPlayer:
+        g.player1_points = 0
+    else:
+        g.player2_points = 0
+    # g.player1_points = 0 if g.currentPlayer else g.player2_points = 0
     for i in g.player1_set if g.currentPlayer else g.player2_set:
         points_px = [coordinates_to_pixel(i[0]), coordinates_to_pixel(i[1]), coordinates_to_pixel(i[2])]
         pygame.draw.polygon(screen, g.player1_color if g.currentPlayer else g.player2_color, points_px)
