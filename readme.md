@@ -1,62 +1,70 @@
-# Dokumentacija projekta Triggle
+# Veštačka inteligencija (Triggle)
 
-# NAPOMENA
-**Član tima kod koga se nalazi source kod za logiku aplikacije se uspavao i nije poslao kod. U ovom dokumentu se trenutno nalazi stara logika aplikacije i UI. Ostatak aplikacije mozemo da pošaljemo sutra.**
-**Stara logika aplikacije se nalazi u fajlu *Trigle.py* **
-
-GitHub link projekta: https://github.com/aleksa1205/VestackaInteligencija
-
-## Zadatak I
+## Faza I
 
 ### UI
 
-Za UI smo koristili biblioteku *pygame*. Aplikacije sadrži 3 glavna menija:
-- Main menu
-- Opcije
+Za UI smo koristili biblioteku **pygame**. Aplikacije sadrži 3 glavna menija:
+- Main menu,
+- Opcije i
 - Menu sa igrom
 
-U glavnom meniju stoji samo dugme za izlaz iz aplikacije i dugme za početak igre. Kada se pritisne dugme 'Play' otvara se prozor sa opcijama.
-U meniju sa opcijama korisnik bira da li želi da igra protiv računara ili protiv drugog igrača. Nakon toga mora da izabere da li želi da on prvi igra ili njegov protivnik (AI ili drugi igrač).
-Nakon toga korisnik bira veličinu stranice table koja se iscrtava i pritiskom na dugme *play* otvara se novi prozor i započinje se igra.
+U main meniju stoji se nalaze dugmići za početak igre i za izlaz iz aplikacije. Kada se pritisne dugme *Play* otvara se prozor sa mogućim opcijama. 
+U meniju sa opcijama korisnik bira da li želi da igra protiv računara ili protiv drugog igrača. Nakon toga korisnik bira da li želi da prvi igra on ili njegov protivnik (AI ili drugi igrač u zavisnosti od prethodnog izbora). Na samom kraju korisnik bira veličinu stranice table koja se iscrtava (u rasponu od 4 do 8) i pritiskom na dugme *Play* otvara se novi prozor i igra počinje.
 
 ### Logika
+Za izradu aplikacije korišćene su sledeće strukture podataka:
 
-Koristili smo nekoliko struktura podataka kako bi smo opsiali stanje igre.
-
-#### Matrica stubova:
-
-Koristili smo matricu kako bi smo indeksirali svaki stub radi lakseg proveravanja poteza i crtanja stanja igre korišćenjem pygame biblioteke.
-
-Za ispravnost poteza koristili smo par pomoćnih funkija:
-- Funkcije koje daju indeks suseda na osnovu poteza koji se izabere (desno, dole levo, dole desno),
-- Funkcija koja provera da li je dati indeks unutar indeksa matrice,
-- Funkcija koja raćuna dužinu izmedju uneta 2 čvora.
-
-Isprevnost poteza se ispituje tako što se od pocetnog čvora 4 puta pozovu funkcije za pronalaženje suseda (4 desna suseda, 4 suseda dole levo i 4 suseda dole desno).
-Nakon toga se 3 dobijena stuba ispituju da li se poklapaju sa krajnjim stubom, ako se poklapaju potez je pravilno unesen, ako nije nije pravilno unesen.
-Takodje se, korišćenjem pomoćne strukture *set*, proverava da li je takav identičan potez već unet, ako jeste potez se smatra neispravnim.
+#### Matrica
+**Matricu** koristimo kao pomoćnu strukturu za crtanje table uz pomoću *pygame* biblioteke i funkcija za pozicioniranje stubića. Dimenzije matrice zavise od izbora korisnika i mogu da budu u rasponu od 4 do 8.
 
 #### Graf
+**Graf** je glavna struktura u ovom projektu i implementiran je kao **Dictionary**. U grafu pamtimo indekse svakog čvora kao **tuple (i,j)** i on nam predstavlja *key*, dok nam *value* predstavlja **set** susednih čvorova između kojih je razvučena gumica.
 
-Graf se koristi da bi se pronasli trouglići.
-Graf je neusmeren, pamti se kao dictionary i trouglić se pronalazi tako sto se pronadje ciklus duzine 3.
-Igrač koji je poslednji odigrao taj potez dobija onoliko bodova koliko je trouglića sklopio.
+#### Set
+**Set-ove** koristimo za čuvanje specifičnih podataka u toku igre zbog njihove mogućnosti da čuvaju samo jednistvene elemente. Prema tome set-ove koristimo za:
+- praćenje formiranih puteva (razvučenih gumica) i 
+- praćenje formiranih ciklusa dužine 3 (formiranih trouglova posebno za svakog igrača).
 
-#### Set strukture
+### Funkcije
 
-Pamti se *set* puteva u grafu kako bi smo proverili ispravnost sledećeg poteza.
-Ako se unese put koji već postoji potez je neispravan.
+#### Funkcije provere (checker.py)
+Kada su u pitanju ove funkcije proveravamo sledeće tri stvari:
+- **in_boundaries** - Proverava da li su prosleđene koordinate u granicama "*matrice*". Samim tim osigurava da potezi igrača ne izlaze iz dozvoljenog opsega table.
+- **check_length** - Proverava udaljenosti između stubića. Proverava da li je udaljenost između dva stubića tačno 3.
+- **end_game** - Proverava da li je igra završena.
 
-#### Funkcije ispitivanja
-*in_boundaries* ispituje da li smo izašli iz opsega matrice i ako jesmo vraća False.
-*check_length* proverava da li je udaljenost između dva prosleđena stuba 3 da bi znali da li smemo da povučemo poteg.
-*end_game* proverava da li je došlo do kraja igre i ako jeste ko je pobedio.
+#### Funkcije za crtanje (draw.py)
+Funkciju u ovom prozoru koristimo za vizuelizaciju igre i prikaz trenutnog stanja table. Funkcije su sledeće:
+- **coordinates_to_pixel** - Konvertuje koordinate čvorova (indekse) u piksele za crtanje na ekranu. Ova funkcija se koristi za pozicioniranje elemenata u tabli u skladu sa odabranim dimenzijama.
+- **create_empty_board** - Crtamo praznu tablu (matricu) sa svim stubićima na osnovu dimenzije koju je izabrao korisnik (od 4 do 8).
+- **create_graph** - Generiše graf na osnovu dimenzije table. Ovaj graf koristimo za praćenje čvorova i njihovih potega. 
+- **draw_line** - Crtamo linije između dva čvora (stubića) koja predstavlja razvučene gumice.
+- **draw_triangles** - Crtamo trouglove koje je formirao aktivni igrač, u određenoj boji u zavisnosti koji je igrač aktivan.
 
-#### Funkcije za pomeranje
-Funkcije *desno*, *dole_desno* i *dole_levo* izvršavaju poteze.
-Funkcija *make_move* kao parametre ima startni i ciljni čvor. Ona polazi od čvora *start* i ide u svim mogućim smerovima (desno, dole levo i dole desno) i proveri da li je nekim od tih puteva stigao do čvora *end*. Ako jeste došao do njega i taj put već nije korišćen da se dođe do tog čvora dodaje se u set puteva, ažurira se graf i crta se linija.
-Funkcija *make_move_tournament* ima sličnu funkcionalnost kao i funkcija *make_move* samo što odgovara formatu koji je dat na prezentaciji.
-Funkcija *find_triangle* traži ciklus dužine 3 i ako ga nađe i on nije već uzet od starne nekog od igrača dodaje ga trenutno aktivnom igraču i crta trougao.
+#### Funkcije za kretanje (move.py)
+Funkcije u ovom modulu zadužene su za realizaciju poteza u igri, navigaciju po tabli i identifikaciju trouglova koje su igrači formirali u toku igre.
 
-#### Pomoćne funkcije
-U fajlu *draw.py* su samo pomoćne funkcije za iscrtavanje koje ne bi imalo potrebe objašnjavati dodatno.
+**Navigacione funkcije**
+- **desno** - Prelazi na sledeći čvor koji se nalazi desno od trenutnog čvora.
+- **dole_desno** - Prelazi na sledeći čvor dijagonalno dole udesno u odnosu na trenutni čvor.
+- **dole_levo** - Prelazi na sledeći čvor dijagonalno dole ulevo u odnosu na trenutni čvor.
+
+**Glavne funkcije**
+- **make_move** - Kao parametre prima početni ciljni čvor. Proverava da li je udaljenost između dva čvora validna (mora biti 3). Simulira kretanje iz početnog čvora u svim mogućim smerovima, i to tačno četiri koraka, kako bi proverila da li je moguće doći do ciljnog čvora. Ako je potez validan crta liniju koja predstavlja razvučenu gumicu, nakon čega poziva funkcije *find_triangles* i *draw_triangles*. U suprotnom vraća grešku koja ukazuje da potez nije dozvoljen.
+
+- **make_move_tournament** - Slična funkciji *make_move*, ali je prilagođena zahtevima formata kretanja datih na času. Za razliku od funkcije *make_move*:
+    - Funkcija unapred dobija smer kretnja samim tim ne proverava sve smerove.
+    - Proverava da li potez izlazi iz granica table.
+    - Ne proverava dolazak do ciljnog čvora jer se on ne definiše eksplicitno.
+
+- **find_triangles** - Nakon svakog poteza igrača, proverava da li su formirani novi trouglovi. Identifikovani trouglovi se dodaju u skup trouglova aktivnog igrača. Trouglovi se kasnije vizualizuju preko funkcije *draw_triangles*.
+
+
+## Autori
+
+- [Aleksa Perić](https://github.com/aleksa1205)
+
+- [Jovan Cvetković](https://github.com/CJovan02)
+
+- [Anja Janković](https://github.com/saznanyaa)

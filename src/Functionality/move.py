@@ -1,20 +1,26 @@
-﻿from src.Functionality.checker import *
-from .draw import draw_line
+﻿import pygame
+from .checker import *
+from .draw import draw_line, draw_triangles
 from src import globals as g
 
+screen = pygame.display.get_surface()
 
-def desno(i, j):
-    return i, j + 1
+def desno(coordinates):
+    return coordinates[0], coordinates[1] + 1
 
-def dole_desno(i, j, n):
-    return i + 1, j if i >= n-1 else j + 1
+def dole_desno(coordinates):
+    x = coordinates[0]
+    y = coordinates[1]
+    return x + 1, y if x >= g.n - 1 else y + 1
 
-def dole_levo(i, j, n):
-    return i + 1, j - 1 if i >= n - 1 else j
+def dole_levo(coordinates):
+    x = coordinates[0]
+    y = coordinates[1]
+    return x + 1, y - 1 if x >= g.n - 1 else y
 
-def make_move(start : tuple, end : tuple,  n):
+def make_move(start : tuple, end : tuple):
     if check_length(start, end) is False:
-        print("Put nije duzine 4!")
+        print("Put nije duzine 3!")
         return
 
     node_desno = start
@@ -25,11 +31,11 @@ def make_move(start : tuple, end : tuple,  n):
     d_desni = [node_d_desno]
 
     for i in range(3):
-        node_desno = desno(node_desno[0], node_desno[1])
+        node_desno = desno(node_desno)
         desni.append(node_desno)
-        node_d_levo = dole_levo(node_d_levo[0], node_d_levo[1], n)
+        node_d_levo = dole_levo(node_d_levo)
         d_levi.append(node_d_levo)
-        node_d_desno = dole_desno(node_d_desno[0], node_d_desno[1], n)
+        node_d_desno = dole_desno(node_d_desno)
         d_desni.append(node_d_desno)
 
     if node_desno == end:
@@ -57,25 +63,29 @@ def make_move(start : tuple, end : tuple,  n):
             g.graph[i].add(j)
             g.graph[j].add(i)
     else:
-        return
-    draw_line(start, end, n)
+        return False
+    draw_line(start, end)
+    find_triangle()
+    draw_triangles()
+    return True
 
-def make_move_tournament(start : tuple, move, n):
+def make_move_tournament(start : tuple, move):
     node = start
     path = [start]
 
     for i in range(3):
         if move == 'D':
-            node = desno(node[0], node[1])
+            node = desno(node)
         elif move == 'DL':
-            node = dole_levo(node[0], node[1], n)
+            node = dole_levo(node)
         elif move == 'DD':
-            node = dole_desno(node[0], node[1], n)
+            node = dole_desno(node)
         else:
             #greska
             return None
-        path.add(node)
-    if in_boundaries(node[0], node[1], n) is False:
+        path.append(node)
+
+    if in_boundaries(node) is False:
         print("Ispali ste iz opsega!")
         return
     #crtanje
@@ -86,7 +96,9 @@ def make_move_tournament(start : tuple, move, n):
         g.graph[i].add(j)
         g.graph[j].add(i)
 
-    draw_line(start, node, n)
+    draw_line(start, node)
+    find_triangle()
+    draw_triangles()
 
 def find_triangle():
     for node in g.graph:

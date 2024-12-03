@@ -1,5 +1,4 @@
 ﻿from math import sqrt
-import pygame.surface
 
 n = 4
 max_number_of_triangles = 3 * n * (n - 1) + 1
@@ -7,13 +6,13 @@ x_start = 100
 y_start = 100
 d = 30
 h = d * sqrt(3) / 2
-screen : pygame.surface.Surface
 currentPlayer = True
 graph = dict()
 paths = set()
 
-#player1
+#player1 / plavi
 player1_color = (173, 216, 230)
+#su njegovi trouglovi
 player1_set = set()
 player1_points = 0
 

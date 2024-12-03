@@ -1,21 +1,23 @@
 ﻿from src import globals as g
 
-def in_boundaries(i, j, size):
+def in_boundaries(coordinates):
+    x = coordinates[0]
+    y = coordinates[1]
     #nevalidan potez
-    if i < 0 or j < 0:
+    if x < 0 or y < 0:
         return False
     #ispao dole
-    if i >= 2 * size - 1:
+    if x >= 2 * g.n - 1:
         return False
     #ispao desno
-    if j >= 2 * size - 1 - abs(size - 1 - i):
+    if y >= 2 * g.n - 1 - abs(g.n - 1 - x):
         return False
     return True
 
 def check_length(stub1 : tuple, stub2 : tuple):
     x = abs(stub2[0] - stub1[0])
     y = abs(stub2[1] - stub1[1])
-    return True if x==3 or y==3 else False
+    return True if x == 3 or y == 3 else False
 
 def end_game():
     if g.player1_points > g.max_number_of_triangles / 2:
