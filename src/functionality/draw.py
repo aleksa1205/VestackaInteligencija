@@ -1,7 +1,7 @@
 ﻿import pygame
 from src import globals as g
 
-screen = pygame.display.get_surface()
+# screen = pygame.display.get_surface()
 
 def coordinates_to_pixel(coordinates):
     x = coordinates[0]
@@ -9,7 +9,7 @@ def coordinates_to_pixel(coordinates):
     m = abs(g.n - 1 - x)
     return g.x_start + abs(g.n - 1 - x) * g.d / 2 + y * g.d, g.y_start + x * g.h
 
-def create_empty_board():
+def create_empty_board(screen):
     # matrix = []
     for i in range(2 * g.n - 1):
         # row = []
@@ -26,11 +26,11 @@ def create_graph():
             # print(j)
             g.graph[(i, j)] = set()
 
-def draw_line(start, end):
+def draw_line(start, end, screen):
     # pygame.draw.line(globals.screen, globals.player1_color if globals.currentPlayer else globals.player2_color, coordinates_to_pixel(start, n),coordinates_to_pixel(end, n), 3)
     pygame.draw.line(screen, (0, 0, 0), coordinates_to_pixel(start), coordinates_to_pixel(end), 3)
 
-def draw_triangles():
+def draw_triangles(screen):
     # resetujemo na nula jer se trouglici u svakom potezu crtaju opet
     # moze da se promeni da imamo po jos jedan set koji ce da sadrzi nacrtane trouglove
     if g.currentPlayer:
