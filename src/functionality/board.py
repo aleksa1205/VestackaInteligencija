@@ -1,6 +1,8 @@
 from typing import Tuple, List
 import pygame
 from math import sqrt
+
+from src.ui_components.colors import rubber_band_color
 from src.ui_components.stub import Stub
 
 from src.states.transparent import Transparent
@@ -13,7 +15,7 @@ class Board:
         self.h = self.d * sqrt(3) / 2
         self.board_size = board_size
         self.stub_radius = 7
-        self.rubber_band_color = (200, 200, 200)
+        self.rubber_band_color = rubber_band_color
         self.rubber_band_width = 3
         self.shared_data = shared_data
         # self.hex_width = ((self.board_size - 1) * 2) * self.d
@@ -85,24 +87,6 @@ class Board:
         y = coordinates[1]
         return self.x_start + abs(self.board_size - 1 - x) * self.d / 2 + y * self.d, self.y_start + x * self.h
 
-    def get_inner_edge_point(self, center, target, radius, band_thickness):
-        """Calculate the point on the inner edge of the circle closest to the target point."""
-        dx = target[0] - center[0]
-        dy = target[1] - center[1]
-        distance = sqrt(dx ** 2 + dy ** 2)
-
-        if distance == 0:  # Mouse is exactly at the center
-            return center
-
-        # Adjust for inner edge
-        inner_radius = radius - band_thickness * 2  # Avoid negative radius
-        scale = inner_radius / distance
-
-        edge_x = center[0] + dx * scale
-        edge_y = center[1] + dy * scale
-
-        return (edge_x, edge_y)
-
     def draw_rubber_band(self, start_pos, end_pos, draw_circles = True):
         """Draw a hollow, bordered line between two points."""
         dx = end_pos[0] - start_pos[0]
@@ -143,7 +127,7 @@ class Board:
 
     def make_move(self, start: tuple, end: tuple):
         if self.check_length(start, end) is False:
-            new_state = Transparent(self.game, "Put nije duzine 3!")
+            new_state = Transparent(self.game, "Put nije duzine 3!", self.shared_data)
             new_state.enter_state()
             return
 
@@ -166,7 +150,8 @@ class Board:
         if node_desno == end:
             path = tuple(desni)
             if path in self.paths:
-                print("Isti put je vec formiran!")
+                new_state = Transparent(self.game, "Isti put je vec formiran!", self.shared_data)
+                new_state.enter_state()
                 return
             self.paths.add(path)
             for i, j in zip(desni[:-1], desni[1:]):
@@ -175,7 +160,8 @@ class Board:
         elif node_d_levo == end:
             path = tuple(d_levi)
             if path in self.paths:
-                print("Isti put je vec formiran!")
+                new_state = Transparent(self.game, "Isti put je vec formiran!", self.shared_data)
+                new_state.enter_state()
                 return
             self.paths.add(path)
             for i, j in zip(d_levi[:-1], d_levi[1:]):
@@ -184,13 +170,16 @@ class Board:
         elif node_d_desno == end:
             path = tuple(d_desni)
             if path in self.paths:
-                print("Isti put je vec formiran!")
+                new_state = Transparent(self.game, "Isti put je vec formiran!", self.shared_data)
+                new_state.enter_state()
                 return
             self.paths.add(path)
             for i, j in zip(d_desni[:-1], d_desni[1:]):
                 self.graph[i].add(j)
                 self.graph[j].add(i)
         else:
+            new_state = Transparent(self.game, "Potez mora da bude u formatu: Desno, Dole Desno ili Dole Levo!", self.shared_data)
+            new_state.enter_state()
             return False
 
         self.shared_data['last_turn'] = (start, end)

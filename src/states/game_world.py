@@ -1,10 +1,8 @@
 from src.states.change_player import ChangePlayer
 from src.states.state import State
 from src.functionality.board import Board
-from pygame import Rect
 import pygame.display
 from src.ui_components.colors import bg_color, player1_color, player2_color
-
 
 class GameWorld(State):
     def __init__(self, game, board_size, plays_first):
@@ -28,16 +26,15 @@ class GameWorld(State):
         # Player Turn
         self.player_turn_surf, self.player_turn_rect = None, None
         self.last_turn_surf, self.last_turn_rect = None, None
-        self.update_text()
+        self.update_top_text()
         self.pause = False
 
         print('Game started...')
         print(self.board_size, self.plays_first)
 
     def update(self, delta_time, events):
-        self.update_text()
         self.board.update()
-        self.update_text()
+        self.update_top_text()
 
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -60,7 +57,7 @@ class GameWorld(State):
             change_player_state = ChangePlayer(self.game, self.shared_data)
             change_player_state.enter_state()
 
-    def update_text(self):
+    def update_top_text(self):
         if self.shared_data['change_player_state']:
             last_turn = self.shared_data['last_turn']
             if not self.shared_data['current_player']:
