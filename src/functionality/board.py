@@ -1,21 +1,24 @@
-﻿from typing import Tuple
-
+﻿from typing import Tuple, List
 import pygame
 from math import sqrt
+from src.ui_components.stub import Stub
 
 class Board:
-    def __init__(self, game, board_size):
+    def __init__(self, game, board_size, pos, shared_data):
         self.game = game
-        self.x_start = 100
-        self.y_start = 100
-        self.d = 30
+        self.x_start = pos[0]
+        self.y_start = pos[1]
+        self.d = 50
         self.h = self.d * sqrt(3) / 2
         self.board_size = board_size
-        self.currentPlayer = True
+        self.stub_radius = 7
+        self.rubber_band_color = (200, 200, 200)
+        self.rubber_band_width = 3
+        self.shared_data = shared_data
         self.paths = set()
+
         # player1 / plavi
         self.player1_color = (173, 216, 230)
-        # su njegovi trouglovi
         self.player1_set = set()
         self.player1_points = 0
 
@@ -23,44 +26,102 @@ class Board:
         self.player2_color = (100, 28, 30)
         self.player2_set = set()
         self.player2_points = 0
+
         self.graph = {}
-        # kreiranje grafa
-        for i in range(2 * self.board_size - 1):
-            for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
-                # print(i)
-                # print(j)
-                self.graph[(i, j)] = set()
+        self.initialize_graph()
+        self.stubovi = []
+        self.initialize_stubovi()
+        self.selected_stubovi : List[Stub] = []
 
     # Metode klase
     def update(self):
-        pass
+        for stub in self.stubovi:
+            if stub.check_click():
+                self.selected_stubovi.append(stub)
+
+        # Izabrana su 2 stuba, znaci odigraj potez
+        if len(self.selected_stubovi) == 2:
+            self.make_move(self.selected_stubovi[0].index, self.selected_stubovi[1].index)
+            self.selected_stubovi[0].reset_clicked()
+            self.selected_stubovi[1].reset_clicked()
+            self.selected_stubovi.clear()
+
+        self.find_triangle()
+        self.draw_triangles()
 
     def render(self):
-        for i in range(2 * self.board_size - 1):
-            # row = []
-            for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
-                # provera za polja tabele
-                # row.append(i * 10 + j)
-                # print(row)
-                pygame.draw.circle(self.game.game_canvas, (0, 0, 0), self.coordinates_to_pixel((i, j)), 3)
+        for stub in self.stubovi: stub.render()
+        self.draw_rubber_bands()
 
-        self.make_move((0, 0), (0, 3))
-        self.make_move((0, 0), (3, 0))
-        self.make_move((0, 0), (3, 3))
-        self.make_move((1, 0), (1, 3))
-        self.change_player()
-        self.make_move((0, 1), (3, 1))
+        # crtanje povlacenje gumice
+        if len(self.selected_stubovi) == 1:
+            mouse_pos = pygame.mouse.get_pos()
+            self.draw_rubber_band(self.selected_stubovi[0].pos, mouse_pos)
+
+        # self.draw_line(start, end)
+        # self.find_triangle()
+        self.draw_triangles()
 
     # Pomocne funkcije
+    def initialize_stubovi(self):
+        for i in range(2 * self.board_size - 1):
+            for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
+                self.stubovi.append(Stub(self.game, (i, j), self.stub_radius, self.board_size, self.d, self.h, self.x_start, self.y_start))
+        self.shared_data['stubovi'] = self.stubovi
+
+    def initialize_graph(self):
+        for i in range(2 * self.board_size - 1):
+            for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
+                self.graph[(i, j)] = set()
+
     def coordinates_to_pixel(self, coordinates : Tuple):
         x = coordinates[0]
         y = coordinates[1]
         m = abs(self.board_size - 1 - x)
         return self.x_start + abs(self.board_size - 1 - x) * self.d / 2 + y * self.d, self.y_start + x * self.h
 
-    def draw_line(self, start : Tuple, end : Tuple):
-        # pygame.draw.line(globals.screen, globals.player1_color if globals.currentPlayer else globals.player2_color, coordinates_to_pixel(start, n),coordinates_to_pixel(end, n), 3)
-        pygame.draw.line(self.game.game_canvas, (0, 0, 0), self.coordinates_to_pixel(start), self.coordinates_to_pixel(end), 3)
+    def get_inner_edge_point(self, center, target, radius, band_thickness):
+        """Calculate the point on the inner edge of the circle closest to the target point."""
+        dx = target[0] - center[0]
+        dy = target[1] - center[1]
+        distance = sqrt(dx ** 2 + dy ** 2)
+
+        if distance == 0:  # Mouse is exactly at the center
+            return center
+
+        # Adjust for inner edge
+        inner_radius = radius - band_thickness * 2  # Avoid negative radius
+        scale = inner_radius / distance
+
+        edge_x = center[0] + dx * scale
+        edge_y = center[1] + dy * scale
+
+        return (edge_x, edge_y)
+
+    def draw_rubber_band(self, start_pos, end_pos, draw_circles = True):
+        """Draw a hollow, bordered line between two points."""
+        dx = end_pos[0] - start_pos[0]
+        dy = end_pos[1] - start_pos[1]
+        length = sqrt(dx ** 2 + dy ** 2)
+
+        nx = -dy / length
+        ny = dx / length
+
+        offset = self.stub_radius
+        p1 = (start_pos[0] + nx * offset, start_pos[1] + ny * offset)
+        p2 = (start_pos[0] - nx * offset, start_pos[1] - ny * offset)
+        p3 = (end_pos[0] - nx * offset, end_pos[1] - ny * offset)
+        p4 = (end_pos[0] + nx * offset, end_pos[1] + ny * offset)
+
+        pygame.draw.polygon(self.game.game_canvas, self.rubber_band_color, [p1, p2, p3, p4], width=2)
+
+        if draw_circles:
+            pygame.draw.circle(self.game.game_canvas, self.rubber_band_color, start_pos, self.stub_radius)
+            pygame.draw.circle(self.game.game_canvas, self.rubber_band_color, end_pos, self.stub_radius)
+
+    def draw_rubber_bands(self):
+        for path in self.paths:
+            self.draw_rubber_band(self.coordinates_to_pixel(path[0]), self.coordinates_to_pixel(path[3]), True)
 
     def desno(self, coordinates):
         return coordinates[0], coordinates[1] + 1
@@ -99,6 +160,7 @@ class Board:
             path = tuple(desni)
             if path in self.paths:
                 print("Isti put je vec formiran!")
+                return
             self.paths.add(path)
             for i, j in zip(desni[:-1], desni[1:]):
                 self.graph[i].add(j)
@@ -107,6 +169,7 @@ class Board:
             path = tuple(d_levi)
             if path in self.paths:
                 print("Isti put je vec formiran!")
+                return
             self.paths.add(path)
             for i, j in zip(d_levi[:-1], d_levi[1:]):
                 self.graph[i].add(j)
@@ -115,15 +178,18 @@ class Board:
             path = tuple(d_desni)
             if path in self.paths:
                 print("Isti put je vec formiran!")
+                return
             self.paths.add(path)
             for i, j in zip(d_desni[:-1], d_desni[1:]):
                 self.graph[i].add(j)
                 self.graph[j].add(i)
         else:
             return False
-        self.draw_line(start, end)
+
         self.find_triangle()
         self.draw_triangles()
+        self.change_player()
+
         return True
 
     def check_length(self, stub1: tuple, stub2: tuple):
@@ -134,15 +200,15 @@ class Board:
     def draw_triangles(self):
         # resetujemo na nula jer se trouglici u svakom potezu crtaju opet
         # moze da se promeni da imamo po jos jedan set koji ce da sadrzi nacrtane trouglove
-        if self.currentPlayer:
+        if self.shared_data['current_player']:
             self.player1_points = 0
         else:
             self.player2_points = 0
-        # g.player1_points = 0 if g.currentPlayer else g.player2_points = 0
-        for i in self.player1_set if self.currentPlayer else self.player2_set:
+        # g.player1_points = 0 if g.shared_data['current_player'] else g.player2_points = 0
+        for i in self.player1_set if self.shared_data['current_player'] else self.player2_set:
             points_px = [self.coordinates_to_pixel(i[0]), self.coordinates_to_pixel(i[1]), self.coordinates_to_pixel(i[2])]
-            pygame.draw.polygon(self.game.game_canvas, self.player1_color if self.currentPlayer else self.player2_color, points_px)
-            if self.currentPlayer:
+            pygame.draw.polygon(self.game.game_canvas, self.player1_color if self.shared_data['current_player'] else self.player2_color, points_px)
+            if self.shared_data['current_player']:
                 self.player1_points += 1
             else:
                 self.player2_points += 1
@@ -159,7 +225,8 @@ class Board:
                         # print(globals.player2_set)
                         # print(cycle)
                         if tuple(cycle) not in self.player1_set and tuple(cycle) not in self.player2_set:
-                            self.player1_set.add(cycle) if self.currentPlayer else self.player2_set.add(cycle)
+                            self.player1_set.add(cycle) if self.shared_data['current_player'] else self.player2_set.add(cycle)
 
     def change_player(self):
-        self.currentPlayer = not self.currentPlayer
+        self.shared_data['current_player'] = not self.shared_data['current_player']
+        self.shared_data['change_player_state'] = True
