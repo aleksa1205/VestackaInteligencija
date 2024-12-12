@@ -1,7 +1,6 @@
 ﻿from pygame import Rect
 from src.states.state import State
 import pygame.time
-
 from src.ui_components.colors import player1_color, player2_color, whiteish
 
 
@@ -10,9 +9,13 @@ class ChangePlayer(State):
         super().__init__(game)
         self.shared_data = shared_data
         self.start_time = pygame.time.get_ticks()
-        self.duration = 2000
+        self.duration = 1500
 
+        # Stubovi
         self.stubovi = shared_data['stubovi']
+        self.total_stubs = len(self.stubovi)
+        self.time_per_stub = self.duration / self.total_stubs
+        self.stubs_colored = 0
 
         # text to display
         self.last_turn = shared_data['last_turn']
@@ -28,12 +31,18 @@ class ChangePlayer(State):
         self.white_surf = pygame.surface.Surface((self.text_rect.w, self.text_rect.h))
 
     def update(self, delta_time):
-        curr_player = self.shared_data['current_player']
-        for stub in self.stubovi:
-            stub.color = player1_color if not curr_player else player2_color
+        elapsed_time = pygame.time.get_ticks() - self.start_time
 
-        curr_time = pygame.time.get_ticks()
-        if curr_time - self.start_time >= self.duration:
+        # Racuna koliko stubova boji ovog frejma
+        new_stubs_colored = min(self.total_stubs, int(elapsed_time / self.time_per_stub))
+
+        curr_player = self.shared_data['current_player']
+
+        for i in range(self.stubs_colored, new_stubs_colored):
+            self.stubovi[i].color = player1_color if not curr_player else player2_color
+        self.stubs_colored = new_stubs_colored
+
+        if elapsed_time >= self.duration:
             for stub in self.stubovi:
                 stub.color = 'Black'
 
