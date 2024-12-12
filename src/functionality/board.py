@@ -186,6 +186,7 @@ class Board:
         else:
             return False
 
+        self.shared_data['last_turn'] = (start, end)
         self.find_triangle()
         self.draw_triangles()
         self.change_player()
