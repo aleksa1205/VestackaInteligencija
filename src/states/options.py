@@ -1,9 +1,10 @@
-﻿from src.states.game_world import GameWorld
+﻿from src.UI_Components.colors import whiteish, bg_color
+from src.states.game_world import GameWorld
 from src.states.state import State
 import pygame
 
-from src.ui_components import Button
-from src.ui_components.radio_group import RadioGroup
+from src.UI_Components import Button
+from src.UI_Components.radio_group import RadioGroup
 
 class Options(State):
     def __init__(self, game):
@@ -15,7 +16,7 @@ class Options(State):
         self.pvp_surf_active = False
 
         # who will play first
-        self.plays_fist = ['ai', 'player']
+        self.plays_first = ['ai', 'player']
 
         self.text_surf = self.game.title_font.render('Options', True, 'Black')
         self.text_rect = self.text_surf.get_rect(midtop=(self.game.GAME_W >> 1, 30))
@@ -59,7 +60,7 @@ class Options(State):
         self.back_btn = Button(self.game, 'Back', ((self.game.GAME_W >> 1) - 200, 600), rect_point='midtop')
         self.play_btn = Button(self.game, 'Play', ((self.game.GAME_W >> 1) + 200, 600), rect_point='midtop')
 
-    def update(self, delta_time):
+    def update(self, delta_time, events):
         if self.ai_button.check_click():
             self.ai_surf_active = True
             self.pvp_surf_active = False
@@ -71,26 +72,26 @@ class Options(State):
 
         if self.player_first_pvp_button.check_click():
             self.plays_first_group.set_active(self.player_first_pvp_button)
-            self.plays_fist = ['pvp', 'player']
+            self.plays_first = ['pvp', 'player']
         if self.player_first_ai_button.check_click():
             self.plays_first_group.set_active(self.player_first_ai_button)
-            self.plays_fist = ['ai', 'player']
+            self.plays_first = ['ai', 'player']
         if self.ai_first_button.check_click():
             self.plays_first_group.set_active(self.ai_first_button)
-            self.plays_fist = ['ai', 'enemy']
+            self.plays_first = ['ai', 'enemy']
         if self.enemy_first_button.check_click():
             self.plays_first_group.set_active(self.enemy_first_button)
-            self.plays_fist = ['pvp', 'enemy']
+            self.plays_first = ['pvp', 'enemy']
 
         if self.back_btn.check_click():
             self.exit_state()
         if self.play_btn.check_click():
             active_button = self.grid_buttons_group.get_active()
-            new_state = GameWorld(self.game, active_button.value, self.plays_fist)
+            new_state = GameWorld(self.game, active_button.value, self.plays_first)
             new_state.enter_state()
 
     def render(self, surface):
-        self.game.game_canvas.fill('#DCDDD8')
+        self.game.game_canvas.fill(bg_color)
         self.game.game_canvas.blit(self.text_surf, self.text_rect)
         self.ai_button.render()
         self.pvp_button.render()

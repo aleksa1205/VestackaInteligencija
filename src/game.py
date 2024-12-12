@@ -1,5 +1,4 @@
 ﻿import os, time, pygame
-
 from src.states.title import Title
 
 class Game:
@@ -7,7 +6,7 @@ class Game:
         pygame.init()
         self.GAME_W, self.GAME_H = 1280, 720
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = 1280, 720
-        self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H))
+        self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H), pygame.SRCALPHA)
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.running, self.playing = True, True
         self.clock = pygame.time.Clock()
@@ -24,13 +23,15 @@ class Game:
             self.render()
 
     def get_events(self):
-        for event in pygame.event.get():
+        self.events = pygame.event.get()
+        for event in self.events:
             if event.type == pygame.QUIT:
                 self.playing = False
                 self.running = False
 
+
     def update(self):
-        self.state_stack[-1].update(self.dt)
+        self.state_stack[-1].update(self.dt, self.events)
 
     def render(self):
         self.state_stack[-1].render(self.game_canvas)

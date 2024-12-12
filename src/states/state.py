@@ -5,7 +5,7 @@ class State:
         self.game = game
         self.prev_state = None
 
-    def update(self, delta_time):
+    def update(self, delta_time, events):
         pass
     def render(self, surface):
         pass
@@ -16,4 +16,4 @@ class State:
         self.game.state_stack.append(self)
 
     def exit_state(self):
-        self.game.state_stack.pop()
+        return self.game.state_stack.pop()

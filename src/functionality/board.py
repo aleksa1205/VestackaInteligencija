@@ -1,23 +1,29 @@
 ﻿from typing import Tuple
-
 import pygame
 from math import sqrt
+
+from src.states.transparent import Transparent
+
 
 class Board:
     def __init__(self, game, board_size):
         self.game = game
-        self.x_start = 100
-        self.y_start = 100
+        self.board_size = board_size
         self.d = 30
         self.h = self.d * sqrt(3) / 2
-        self.board_size = board_size
+        # self.hex_width = ((self.board_size - 1) * 2) * self.d
+        # self.hex_height = ((self.board_size - 1) * 2) * self.h
+        self.x_start = (self.game.SCREEN_WIDTH - (((self.board_size - 1) * 2) * self.d)) / 2
+        self.y_start = (self.game.SCREEN_HEIGHT - (((self.board_size - 1) * 2) * self.h)) / 2
         self.currentPlayer = True
         self.paths = set()
         # player1 / plavi
-        self.player1_color = (173, 216, 230)
+        self.player1_color = (102, 208, 242)
         # su njegovi trouglovi
         self.player1_set = set()
         self.player1_points = 0
+
+        self.message_start_time = None
 
         # player2 / ai
         self.player2_color = (100, 28, 30)
@@ -45,6 +51,7 @@ class Board:
                 pygame.draw.circle(self.game.game_canvas, (0, 0, 0), self.coordinates_to_pixel((i, j)), 3)
 
         self.make_move((0, 0), (0, 3))
+        self.make_move((0, 0), (0, 4))
         self.make_move((0, 0), (3, 0))
         self.make_move((0, 0), (3, 3))
         self.make_move((1, 0), (1, 3))
@@ -55,7 +62,6 @@ class Board:
     def coordinates_to_pixel(self, coordinates : Tuple):
         x = coordinates[0]
         y = coordinates[1]
-        m = abs(self.board_size - 1 - x)
         return self.x_start + abs(self.board_size - 1 - x) * self.d / 2 + y * self.d, self.y_start + x * self.h
 
     def draw_line(self, start : Tuple, end : Tuple):
@@ -77,7 +83,8 @@ class Board:
 
     def make_move(self, start: tuple, end: tuple):
         if self.check_length(start, end) is False:
-            print("Put nije duzine 3!")
+            new_state = Transparent(self.game, "Put nije duzine 3!")
+            new_state.enter_state()
             return
 
         node_desno = start
@@ -95,6 +102,7 @@ class Board:
             node_d_desno = self.dole_desno(node_d_desno)
             d_desni.append(node_d_desno)
 
+        # transparent da se popravi ne radi lepo za ovu gresku
         if node_desno == end:
             path = tuple(desni)
             if path in self.paths:
