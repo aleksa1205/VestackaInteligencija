@@ -1,6 +1,6 @@
 ﻿import pygame
 
-from src.UI_Components.colors import transparent
+from src.ui_components.colors import transparent
 from src.states.state import State
 
 class Transparent(State):

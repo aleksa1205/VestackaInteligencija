@@ -1,7 +1,7 @@
-﻿from src.UI_Components.colors import bg_color
+﻿from src.ui_components.colors import bg_color
 from src.states.state import State
 from src.states.options import Options
-from src.UI_Components import Button
+from src.ui_components import Button
 import pygame
 
 class Title(State):

@@ -27,17 +27,24 @@ class GameWorld(State):
 
         # Player Turn
         self.player_turn_surf, self.player_turn_rect = None, None
-        self.update_player_turn_text()
-        self.board = Board(game, board_size)
+        self.last_turn_surf, self.last_turn_rect = None, None
+        self.update_text()
         self.pause = False
 
         print('Game started...')
         print(self.board_size, self.plays_first)
 
     def update(self, delta_time, events):
-        self.update_player_turn_text()
+        self.update_text()
         self.board.update()
         self.update_text()
+
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    from src.states.pause_menu import PauseMenu
+                    new_state = PauseMenu(self.game)
+                    new_state.enter_state()
 
     def render(self, surface):
         self.game.game_canvas.fill(bg_color)
@@ -52,13 +59,6 @@ class GameWorld(State):
         if self.shared_data['change_player_state']:
             change_player_state = ChangePlayer(self.game, self.shared_data)
             change_player_state.enter_state()
-            
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    from src.states.pause_menu import PauseMenu
-                    new_state = PauseMenu(self.game)
-                    new_state.enter_state()
 
     def update_text(self):
         if self.shared_data['change_player_state']:

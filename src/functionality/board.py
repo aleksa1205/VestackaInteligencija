@@ -7,7 +7,7 @@ from src.states.transparent import Transparent
 
 
 class Board:
-    def __init__(self, game, board_size, pos, shared_data):
+    def __init__(self, game, board_size, shared_data):
         self.game = game
         self.d = 50
         self.h = self.d * sqrt(3) / 2
@@ -66,8 +66,6 @@ class Board:
             mouse_pos = pygame.mouse.get_pos()
             self.draw_rubber_band(self.selected_stubovi[0].pos, mouse_pos)
 
-        # self.draw_line(start, end)
-        # self.find_triangle()
         self.draw_triangles()
 
     # Pomocne funkcije
@@ -81,18 +79,6 @@ class Board:
         for i in range(2 * self.board_size - 1):
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
                 self.graph[(i, j)] = set()
-                # provera za polja tabele
-                # row.append(i * 10 + j)
-                # print(row)
-                pygame.draw.circle(self.game.game_canvas, (0, 0, 0), self.coordinates_to_pixel((i, j)), 3)
-
-        self.make_move((0, 0), (0, 3))
-        self.make_move((0, 0), (0, 4))
-        self.make_move((0, 0), (3, 0))
-        self.make_move((0, 0), (3, 3))
-        self.make_move((1, 0), (1, 3))
-        self.change_player()
-        self.make_move((0, 1), (3, 1))
 
     def coordinates_to_pixel(self, coordinates : Tuple):
         x = coordinates[0]
