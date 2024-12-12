@@ -1,4 +1,6 @@
 ﻿import os, time, pygame
+from pygame import Surface
+from pygame.font import Font
 from src.states.title import Title
 
 class Game:
@@ -6,7 +8,7 @@ class Game:
         pygame.init()
         self.GAME_W, self.GAME_H = 1280, 720
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = 1280, 720
-        self.game_canvas = pygame.Surface((self.GAME_W, self.GAME_H), pygame.SRCALPHA)
+        self.game_canvas : Surface = Surface((self.GAME_W, self.GAME_H), pygame.SRCALPHA)
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.running, self.playing = True, True
         self.clock = pygame.time.Clock()
@@ -57,7 +59,7 @@ class Game:
         self.game_menus_dir = os.path.join('game_menus')
         self.ui_components = os.path.join('ui_components')
         # self.font_dir
-        self.gui_font = pygame.font.Font(None, 30)
+        self.gui_font : Font = pygame.font.Font(None, 30)
         self.title_font = pygame.font.Font(None, 100)
 
     def load_states(self):
