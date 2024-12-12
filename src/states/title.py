@@ -1,6 +1,7 @@
-﻿from src.states.options import Options
+﻿from src.UI_Components.colors import bg_color
 from src.states.state import State
-from src.ui_components import Button
+from src.states.options import Options
+from src.UI_Components import Button
 import pygame
 
 class Title(State):
@@ -14,7 +15,7 @@ class Title(State):
         self.play_button = Button(self.game, 'Play', (self.game.SCREEN_WIDTH >> 1, 300), rect_point='center')
         self.quit_button = Button(self.game,'Quit', (self.game.SCREEN_WIDTH >> 1, 400), rect_point='center')
 
-    def update(self, delta_time):
+    def update(self, delta_time, events):
         if self.play_button.check_click():
             new_state = Options(self.game)
             new_state.enter_state()
@@ -22,10 +23,10 @@ class Title(State):
         if self.quit_button.check_click():
             self.game.playing = False
             self.game.running = False
+
     def render(self, surface):
-        self.game.game_canvas.fill('#DCDDD8')
+        self.game.game_canvas.fill(bg_color)
         self.game.game_canvas.blit(self.text_surf, self.text_rect)
 
         self.play_button.render()
         self.quit_button.render()
-
