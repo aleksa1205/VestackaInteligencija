@@ -33,15 +33,19 @@ class GameWorld(State):
         print(self.board_size, self.plays_first)
 
     def update(self, delta_time, events):
-        self.board.update()
+        self.board.update(events)
         self.update_top_text()
 
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    from src.states.pause_menu import PauseMenu
-                    new_state = PauseMenu(self.game)
-                    new_state.enter_state()
+                    if len(self.board.selected_stubovi) == 1:
+                        self.board.selected_stubovi[0].reset_clicked()
+                        self.board.selected_stubovi.clear()
+                    else:
+                        from src.states.pause_menu import PauseMenu
+                        new_state = PauseMenu(self.game)
+                        new_state.enter_state()
 
     def render(self, surface):
         self.game.game_canvas.fill(bg_color)

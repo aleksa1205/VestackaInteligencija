@@ -1,10 +1,8 @@
 from typing import Tuple, List
 import pygame
 from math import sqrt
-
 from src.ui_components.colors import rubber_band_color
 from src.ui_components.stub import Stub
-
 from src.states.transparent import Transparent
 
 
@@ -44,7 +42,13 @@ class Board:
         self.selected_stubovi : List[Stub] = []
 
     # Metode klase
-    def update(self):
+    def update(self, events):
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3 and len(self.selected_stubovi) == 1:
+                    self.selected_stubovi[0].reset_clicked()
+                    self.selected_stubovi.clear()
+
         for stub in self.stubovi:
             if stub.check_click():
                 self.selected_stubovi.append(stub)
@@ -55,9 +59,6 @@ class Board:
             self.selected_stubovi[0].reset_clicked()
             self.selected_stubovi[1].reset_clicked()
             self.selected_stubovi.clear()
-
-        self.find_triangle()
-        self.draw_triangles()
 
     def render(self):
         for stub in self.stubovi: stub.render()
@@ -92,6 +93,8 @@ class Board:
         dx = end_pos[0] - start_pos[0]
         dy = end_pos[1] - start_pos[1]
         length = sqrt(dx ** 2 + dy ** 2)
+
+        if length == 0: return
 
         nx = -dy / length
         ny = dx / length
@@ -184,7 +187,6 @@ class Board:
 
         self.shared_data['last_turn'] = (start, end)
         self.find_triangle()
-        self.draw_triangles()
         self.change_player()
 
         return True
@@ -202,13 +204,23 @@ class Board:
         else:
             self.player2_points = 0
         # g.player1_points = 0 if g.shared_data['current_player'] else g.player2_points = 0
-        for i in self.player1_set if self.shared_data['current_player'] else self.player2_set:
+        # for i in self.player1_set if self.shared_data['current_player'] else self.player2_set:
+        for i in self.player1_set:
             points_px = [self.coordinates_to_pixel(i[0]), self.coordinates_to_pixel(i[1]), self.coordinates_to_pixel(i[2])]
             pygame.draw.polygon(self.game.game_canvas, self.player1_color if self.shared_data['current_player'] else self.player2_color, points_px)
             if self.shared_data['current_player']:
                 self.player1_points += 1
             else:
                 self.player2_points += 1
+
+        for i in self.player2_set:
+            points_px = [self.coordinates_to_pixel(i[0]), self.coordinates_to_pixel(i[1]), self.coordinates_to_pixel(i[2])]
+            pygame.draw.polygon(self.game.game_canvas, self.player1_color if self.shared_data['current_player'] else self.player2_color, points_px)
+            if self.shared_data['current_player']:
+                self.player1_points += 1
+            else:
+                self.player2_points += 1
+
 
     def find_triangle(self):
         for node in self.graph:
@@ -223,6 +235,9 @@ class Board:
                         # print(cycle)
                         if tuple(cycle) not in self.player1_set and tuple(cycle) not in self.player2_set:
                             self.player1_set.add(cycle) if self.shared_data['current_player'] else self.player2_set.add(cycle)
+
+        print('Player 1: ', self.player1_set)
+        print('Player 2: ', self.player2_set)
 
     def change_player(self):
         self.shared_data['current_player'] = not self.shared_data['current_player']
