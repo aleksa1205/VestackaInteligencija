@@ -7,7 +7,6 @@ import pygame
 class Title(State):
     def __init__(self, game):
         super().__init__(game)
-
         pygame.display.set_caption('Main Menu')
         self.text_surf = self.game.title_font.render('Triggle', True, 'Black')
         self.text_rect = self.text_surf.get_rect(midtop=(self.game.SCREEN_WIDTH >> 1, 30))

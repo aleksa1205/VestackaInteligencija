@@ -10,7 +10,7 @@ from math import sin, cos
 class Board:
     def __init__(self, game, board_size, shared_data):
         self.game = game
-        self.d = 40
+        self.d = 60
         self.h = self.d * sqrt(3) / 2
         self.board_size = board_size
         self.stub_radius = 6
@@ -221,19 +221,32 @@ class Board:
             self.player1_points = 0
         else:
             self.player2_points = 0
-        # g.player1_points = 0 if g.shared_data['current_player'] else g.player2_points = 0
-        # for i in self.player1_set if self.shared_data['current_player'] else self.player2_set:
+
         for cycle in self.player1_set:
-            x, y = self.coordinates_to_pixel(cycle[0])
-            self.draw_traingle((x, y + self.d / 2), player1_color)
+            if cycle[0][0] == cycle[1][0]:
+                x, y = self.coordinates_to_pixel(cycle[2])
+                center_x = x
+                center_y = y - (2 / 3 * self.h)
+            else:
+                x, y = self.coordinates_to_pixel(cycle[0])
+                center_x = x
+                center_y = y + (2 / 3 * self.h)
+            self.draw_traingle((center_x, center_y), player1_color)
             # if self.shared_data['current_player']:
             #     self.player1_points += 1
             # else:
             #     self.player2_points += 1
 
         for cycle in self.player2_set:
-            x, y = self.coordinates_to_pixel(cycle[0])
-            self.draw_traingle((x, y + self.d / 2), player2_color)
+            if cycle[0][0] == cycle[1][0]:
+                x, y = self.coordinates_to_pixel(cycle[2])
+                center_x = x
+                center_y = y - (2 / 3 * self.h)
+            else:
+                x, y = self.coordinates_to_pixel(cycle[0])
+                center_x = x
+                center_y = y + (2 / 3 * self.h)
+            self.draw_traingle((center_x, center_y), player2_color)
             # if self.shared_data['current_player']:
             #     self.player1_points += 1
             # else:
@@ -252,9 +265,6 @@ class Board:
                         # print(cycle)
                         if tuple(cycle) not in self.player1_set and tuple(cycle) not in self.player2_set:
                             self.player1_set.add(cycle) if self.shared_data['current_player'] else self.player2_set.add(cycle)
-
-        print('Player 1: ', self.player1_set)
-        print('Player 2: ', self.player2_set)
 
     def change_player(self):
         self.shared_data['current_player'] = not self.shared_data['current_player']
