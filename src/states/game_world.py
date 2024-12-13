@@ -26,6 +26,8 @@ class GameWorld(State):
         # Player Turn
         self.player_turn_surf, self.player_turn_rect = None, None
         self.last_turn_surf, self.last_turn_rect = None, None
+        self.player1_points_surf, self.player1_points_rect = None, None
+        self.player2_points_surf, self.player2_points_rect = None, None
         self.update_top_text()
         self.pause = False
 
@@ -35,6 +37,13 @@ class GameWorld(State):
     def update(self, delta_time, events):
         self.board.update(events)
         self.update_top_text()
+
+        # print(self.board.player1_points)
+        # print(self.board.player2_points)
+        if self.board.player1_points > self.board.points_to_win or self.board.player2_points > self.board.points_to_win:
+            from src.states.end_game import EndGame
+            new_state = EndGame(self.game, "Player1 wins!" if self.board.player1_points > self.board.player2_points else "Player2 wins!", player1_color if self.board.player1_points > self.board.player2_points else player2_color)
+            new_state.enter_state()
 
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -47,12 +56,15 @@ class GameWorld(State):
                         new_state = PauseMenu(self.game)
                         new_state.enter_state()
 
+
     def render(self, surface):
         self.game.game_canvas.fill(bg_color)
-
+        # nadji tacke
         self.board.render()
 
         self.game.game_canvas.blit(self.player_turn_surf, self.player_turn_rect)
+        self.game.game_canvas.blit(self.player1_points_surf, self.player1_points_rect)
+        self.game.game_canvas.blit(self.player2_points_surf, self.player2_points_rect)
 
         if self.shared_data['last_turn']:
             self.game.game_canvas.blit(self.last_turn_surf, self.last_turn_rect)
@@ -91,3 +103,9 @@ class GameWorld(State):
 
         self.last_turn_surf = self.game.gui_font.render(turn_text, True, (0, 0, 0))
         self.last_turn_rect = self.last_turn_surf.get_rect(midtop = (self.game.GAME_W >> 1, 60))
+
+        self.player1_points_surf = self.game.title_font.render(str(self.board.player1_points), True, player1_color)
+        self.player1_points_rect = self.player1_points_surf.get_rect(midleft = (15, self.game.GAME_H >> 1))
+
+        self.player2_points_surf = self.game.title_font.render(str(self.board.player2_points), True, player2_color)
+        self.player2_points_rect = self.player2_points_surf.get_rect(midright = (self.game.GAME_W - 15, self.game.GAME_H >> 1))

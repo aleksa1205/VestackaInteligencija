@@ -2,7 +2,7 @@
 from src.states.state import State
 from src.states.game_world import GameWorld
 from src.ui_components import Button
-from src.ui_components.colors import pause_menu_color
+from src.ui_components.colors import menu_color
 
 class PauseMenu(State):
     def __init__(self, game):
@@ -13,7 +13,7 @@ class PauseMenu(State):
 
         self.resume_button = Button(self.game, 'Resume', (self.game.SCREEN_WIDTH >> 1, 300), rect_point='center')
         self.restart_button = Button(self.game, 'Restart', (self.game.SCREEN_WIDTH >> 1, 400), rect_point='center')
-        self.title_button = Button(self.game, 'Back to title menu', (self.game.SCREEN_WIDTH >> 1, 500), rect_point='center')
+        self.title_button = Button(self.game, 'Back to title', (self.game.SCREEN_WIDTH >> 1, 500), rect_point='center')
 
     def update(self, delta_time, events):
         if self.resume_button.check_click():
@@ -34,7 +34,7 @@ class PauseMenu(State):
                     self.exit_state()
 
     def render(self, surface):
-        self.game.game_canvas.fill(pause_menu_color)
+        self.game.game_canvas.fill(menu_color)
         self.game.game_canvas.blit(self.text_surf, self.text_rect)
 
         self.resume_button.render()
