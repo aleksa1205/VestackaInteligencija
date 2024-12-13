@@ -2,7 +2,8 @@ from src.states.change_player import ChangePlayer
 from src.states.state import State
 from src.functionality.board import Board
 import pygame.display
-from src.ui_components.colors import bg_color, player1_color, player2_color
+from src.ui_components.colors import bg_color, player1_color, player2_color, main_color_600
+
 
 class GameWorld(State):
     def __init__(self, game, board_size, plays_first):
@@ -40,7 +41,7 @@ class GameWorld(State):
 
         # print(self.board.player1_points)
         # print(self.board.player2_points)
-        if self.board.player1_points > self.board.points_to_win or self.board.player2_points > self.board.points_to_win:
+        if self.board.player1_points >= self.board.points_to_win or self.board.player2_points >= self.board.points_to_win:
             from src.states.end_game import EndGame
             new_state = EndGame(self.game, "Player1 wins!" if self.board.player1_points > self.board.player2_points else "Player2 wins!", player1_color if self.board.player1_points > self.board.player2_points else player2_color)
             new_state.enter_state()

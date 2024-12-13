@@ -55,12 +55,18 @@ class Game:
         surface.blit(text_surf, text_rect)
 
     def load_assets(self):
-        self.funct_dir = os.path.join('functionality')
-        self.game_menus_dir = os.path.join('game_menus')
-        self.ui_components = os.path.join('ui_components')
         # self.font_dir
-        self.gui_font : Font = pygame.font.Font(None, 30)
-        self.title_font = pygame.font.Font(None, 100)
+        base_dir = os.path.dirname(os.path.abspath(__file__))  # This gives the src directory
+
+        motion_control = os.path.join(base_dir, '../resources/Fonts/MotionControl-Bold.otf')
+        roboto_black = os.path.join(base_dir, '../resources/Fonts/Roboto-Black.ttf')
+        roboto_light = os.path.join(base_dir, '../resources/Fonts/Roboto-Bold.ttf')
+        self.gui_font = pygame.font.Font(motion_control, 27)
+        self.title_font = pygame.font.Font(motion_control, 100)
+
+        # sounds
+        button_click = os.path.join(base_dir, '../resources/Sounds/button_click.mp3')
+        self.button_click_sound = pygame.mixer.Sound(button_click)
 
     def load_states(self):
         self.title_screen = Title(self)

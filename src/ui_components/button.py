@@ -1,14 +1,17 @@
 ﻿import pygame
 
+from src.ui_components.colors import main_color_600, main_color_700, main_color_800
+
+
 class Button:
     def __init__(self, game, text, pos, width = 200, height = 40, rect_point = None, value = None):
         # Core attributes
         self.game = game
         self.pressed = False
         self.active = False
-        self.button_color = '#475F77'
-        self.hover_color = '#D74B4B'
-        self.active_color = 'Red'
+        self.button_color = main_color_600
+        self.hover_color = main_color_700
+        self.active_color = main_color_800
         self.value = value
 
         # top rectangle
@@ -41,8 +44,9 @@ class Button:
             if not self.active:
                 self.top_color = self.hover_color
             if pygame.mouse.get_pressed()[0] and not self.pressed:
-               self.pressed = True
-               return True
+                self.game.button_click_sound.play()
+                self.pressed = True
+                return True
         elif not self.active:
             self.top_color = self.button_color
 
