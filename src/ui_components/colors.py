@@ -7,4 +7,4 @@ ai_color = (0, 255, 0)
 
 rubber_band_color = (150, 150, 150)
 bg_color = whiteish
-pause_menu_color = gray_transparent
+menu_color = gray_transparent

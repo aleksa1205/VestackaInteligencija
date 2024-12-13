@@ -10,9 +10,9 @@ from math import sin, cos
 class Board:
     def __init__(self, game, board_size, shared_data):
         self.game = game
-        self.d = 60
-        self.h = self.d * sqrt(3) / 2
         self.board_size = board_size
+        self.d = 50 if self.board_size < 8 else 43
+        self.h = self.d * sqrt(3) / 2
         self.stub_radius = 6
         self.rubber_band_color = rubber_band_color
         self.rubber_band_width = 3
@@ -21,8 +21,10 @@ class Board:
         # self.hex_height = ((self.board_size - 1) * 2) * self.h
         self.x_start = (self.game.SCREEN_WIDTH - (((self.board_size - 1) * 2) * self.d)) / 2
         self.y_start = (self.game.SCREEN_HEIGHT - (((self.board_size - 1) * 2) * self.h)) / 2
+        self.y_start = self.y_start if self.board_size < 8 else self.y_start + 50
         self.currentPlayer = True
         self.paths = set()
+        self.points_to_win = 6 * self.board_size + 3
 
         # player1 / plavi
         self.player1_color = (173, 216, 230)
@@ -37,9 +39,8 @@ class Board:
         self.player2_points = 0
 
         self.graph = {}
-        self.initialize_graph()
         self.stubovi = []
-        self.initialize_stubovi()
+        self.initialize_stubovi_and_graph()
         self.selected_stubovi : List[Stub] = []
 
     # Metode klase
@@ -62,6 +63,21 @@ class Board:
             self.selected_stubovi.clear()
 
     def render(self):
+        point1 = self.coordinates_to_pixel((0, 0))
+        point1 = [point1[0] - 25, point1[1] - 25]
+        point2 = self.coordinates_to_pixel((0, self.board_size - 1))
+        point2 = [point2[0] + 25, point2[1] - 25]
+        point3 = self.coordinates_to_pixel((self.board_size - 1, (self.board_size - 1) * 2))
+        point3 = [point3[0] + 25, point3[1]]
+        point4 = self.coordinates_to_pixel(((self.board_size - 1) * 2, self.board_size - 1))
+        point4 = [point4[0] + 25, point4[1] + 25]
+        point5 = self.coordinates_to_pixel(((self.board_size - 1) * 2, 0))
+        point5 = [point5[0] - 25, point5[1] + 25]
+        point6 = self.coordinates_to_pixel((self.board_size - 1, 0))
+        point6 = [point6[0] - 25, point6[1]]
+        print(point1, point2, point3, point4, point5, point6)
+        pygame.draw.polygon(self.game.game_canvas, 'Black', (point1, point2, point3, point4, point5, point6))
+
         for stub in self.stubovi: stub.render()
         self.draw_rubber_bands()
 
@@ -73,16 +89,13 @@ class Board:
         self.draw_triangles()
 
     # Pomocne funkcije
-    def initialize_stubovi(self):
+    def initialize_stubovi_and_graph(self):
         for i in range(2 * self.board_size - 1):
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
+                print(i,j,self.coordinates_to_pixel((i,j)))
                 self.stubovi.append(Stub(self.game, (i, j), self.stub_radius, self.board_size, self.d, self.h, self.x_start, self.y_start))
-        self.shared_data['stubovi'] = self.stubovi
-
-    def initialize_graph(self):
-        for i in range(2 * self.board_size - 1):
-            for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
                 self.graph[(i, j)] = set()
+        self.shared_data['stubovi'] = self.stubovi
 
     def coordinates_to_pixel(self, coordinates : Tuple):
         x = coordinates[0]
@@ -197,7 +210,7 @@ class Board:
         y = abs(stub2[1] - stub1[1])
         return True if x == 3 or y == 3 else False
 
-    def draw_traingle(self, center, color):
+    def draw_traingle(self, center, color, upside_down):
         line_length = self.d / 5
         x = center[0]
         y = center[1]
@@ -205,11 +218,13 @@ class Board:
         surface = self.game.game_canvas
         width = self.stub_radius - 2
 
-        pygame.draw.line(surface, color, center, (x, y + line_length), width)
+        direction = 1 if not upside_down else -1
+
+        pygame.draw.line(surface, color, center, (x, y + direction * line_length), width)
         pi = 3.14159
         angle = pi / 6
-        z1 = line_length * cos(angle)
-        z2 = line_length * sin(angle)
+        z1 = direction * line_length * cos(angle)
+        z2 = direction * line_length * sin(angle)
 
         pygame.draw.line(surface, color, center, (x + z1, y - z2), width)
         pygame.draw.line(surface, color, center, (x - z1, y - z2), width)
@@ -217,12 +232,16 @@ class Board:
     def draw_triangles(self):
         # resetujemo na nula jer se trouglici u svakom potezu crtaju opet
         # moze da se promeni da imamo po jos jedan set koji ce da sadrzi nacrtane trouglove
-        if self.shared_data['current_player']:
-            self.player1_points = 0
-        else:
-            self.player2_points = 0
+
+        # if self.shared_data['current_player']:
+        #     self.player1_points = 0
+        # else:
+        #     self.player2_points = 0
+        self.player1_points = len(self.player1_set)
+        self.player2_points = len(self.player2_set)
 
         for cycle in self.player1_set:
+            upside_down = False
             if cycle[0][0] == cycle[1][0]:
                 x, y = self.coordinates_to_pixel(cycle[2])
                 center_x = x
@@ -231,13 +250,16 @@ class Board:
                 x, y = self.coordinates_to_pixel(cycle[0])
                 center_x = x
                 center_y = y + (2 / 3 * self.h)
-            self.draw_traingle((center_x, center_y), player1_color)
+                upside_down = True
+
+            self.draw_traingle((center_x, center_y), player1_color, upside_down)
             # if self.shared_data['current_player']:
             #     self.player1_points += 1
             # else:
             #     self.player2_points += 1
 
         for cycle in self.player2_set:
+            upside_down = False
             if cycle[0][0] == cycle[1][0]:
                 x, y = self.coordinates_to_pixel(cycle[2])
                 center_x = x
@@ -246,7 +268,8 @@ class Board:
                 x, y = self.coordinates_to_pixel(cycle[0])
                 center_x = x
                 center_y = y + (2 / 3 * self.h)
-            self.draw_traingle((center_x, center_y), player2_color)
+                upside_down = True
+            self.draw_traingle((center_x, center_y), player2_color, upside_down)
             # if self.shared_data['current_player']:
             #     self.player1_points += 1
             # else:
