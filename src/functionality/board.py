@@ -6,7 +6,6 @@ from src.ui_components.stub import Stub
 from src.states.transparent import Transparent
 from math import sin, cos
 
-
 class Board:
     def __init__(self, game, board_size, shared_data):
         self.game = game

@@ -1,6 +1,9 @@
 ﻿import pygame
 from pygame.rect import RectType
 
+from src.ui_components.colors import neutral_color_500, neutral_color_900, neutral_color_800, neutral_color_700, \
+    neutral_color_400
+
 
 class Stub:
     def __init__(self, game, index, radius, board_size, distance, height, x_start, y_start):
@@ -13,10 +16,10 @@ class Stub:
 
         self.game = game
         self.pos = self.coordinates_to_pixel(index)
-        self.default_color = 'Black'
+        self.default_color = neutral_color_900
         self.color = self.default_color
-        self.hover_color = 'Orange'
-        self.active_color = 'Red'
+        self.hover_color = neutral_color_400
+        self.active_color = neutral_color_900
         self.radius = radius
         self.rect : RectType = pygame.Rect(self.pos, (radius * 2, radius * 2))
         self.rect.center = self.pos
