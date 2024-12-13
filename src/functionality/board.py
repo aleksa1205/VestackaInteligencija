@@ -1,7 +1,8 @@
 from typing import Tuple, List
 import pygame
 from math import sqrt
-from src.ui_components.colors import rubber_band_color, player1_color, player2_color
+from src.ui_components.colors import rubber_band_color, player1_color, player2_color, neutral_color_900, \
+    neutral_color_800, neutral_color_700, neutral_color_500, neutral_color_100, blue_color_300, blue_color_400
 from src.ui_components.stub import Stub
 from src.states.transparent import Transparent
 from math import sin, cos
@@ -16,6 +17,7 @@ class Board:
         self.rubber_band_color = rubber_band_color
         self.rubber_band_width = 3
         self.shared_data = shared_data
+        self.board_bg_color = neutral_color_800
         # self.hex_width = ((self.board_size - 1) * 2) * self.d
         # self.hex_height = ((self.board_size - 1) * 2) * self.h
         self.x_start = (self.game.SCREEN_WIDTH - (((self.board_size - 1) * 2) * self.d)) / 2
@@ -26,14 +28,12 @@ class Board:
         self.points_to_win = 6 * self.board_size + 3
 
         # player1 / plavi
-        self.player1_color = (173, 216, 230)
         self.player1_set = set()
         self.player1_points = 0
 
         self.message_start_time = None
 
         # player2 / ai
-        self.player2_color = (100, 28, 30)
         self.player2_set = set()
         self.player2_points = 0
 
@@ -62,21 +62,7 @@ class Board:
             self.selected_stubovi.clear()
 
     def render(self):
-        point1 = self.coordinates_to_pixel((0, 0))
-        point1 = [point1[0] - 25, point1[1] - 25]
-        point2 = self.coordinates_to_pixel((0, self.board_size - 1))
-        point2 = [point2[0] + 25, point2[1] - 25]
-        point3 = self.coordinates_to_pixel((self.board_size - 1, (self.board_size - 1) * 2))
-        point3 = [point3[0] + 25, point3[1]]
-        point4 = self.coordinates_to_pixel(((self.board_size - 1) * 2, self.board_size - 1))
-        point4 = [point4[0] + 25, point4[1] + 25]
-        point5 = self.coordinates_to_pixel(((self.board_size - 1) * 2, 0))
-        point5 = [point5[0] - 25, point5[1] + 25]
-        point6 = self.coordinates_to_pixel((self.board_size - 1, 0))
-        point6 = [point6[0] - 25, point6[1]]
-        print(point1, point2, point3, point4, point5, point6)
-        pygame.draw.polygon(self.game.game_canvas, 'Black', (point1, point2, point3, point4, point5, point6))
-
+        self.draw_board_bg(25)
         for stub in self.stubovi: stub.render()
         self.draw_rubber_bands()
 
@@ -91,7 +77,7 @@ class Board:
     def initialize_stubovi_and_graph(self):
         for i in range(2 * self.board_size - 1):
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
-                print(i,j,self.coordinates_to_pixel((i,j)))
+                # print(i,j,self.coordinates_to_pixel((i,j)))
                 self.stubovi.append(Stub(self.game, (i, j), self.stub_radius, self.board_size, self.d, self.h, self.x_start, self.y_start))
                 self.graph[(i, j)] = set()
         self.shared_data['stubovi'] = self.stubovi
@@ -118,11 +104,31 @@ class Board:
         p3 = (end_pos[0] - nx * offset, end_pos[1] - ny * offset)
         p4 = (end_pos[0] + nx * offset, end_pos[1] + ny * offset)
 
-        pygame.draw.polygon(self.game.game_canvas, self.rubber_band_color, [p1, p2, p3, p4], width=2)
+        pygame.draw.polygon(self.game.game_canvas, self.rubber_band_color, [p1, p2, p3, p4], width=1)
 
         if draw_circles:
             pygame.draw.circle(self.game.game_canvas, self.rubber_band_color, start_pos, self.stub_radius)
             pygame.draw.circle(self.game.game_canvas, self.rubber_band_color, end_pos, self.stub_radius)
+
+    def draw_board_bg(self, offset):
+        angle = 3.14159 / 3
+        z1 = offset * cos(angle)
+        z2 = offset * sin(angle)
+
+        point1 = self.coordinates_to_pixel((0, 0))
+        point1 = [point1[0] - z1, point1[1] - z2]
+        point2 = self.coordinates_to_pixel((0, self.board_size - 1))
+        point2 = [point2[0] + z1, point2[1] - z2]
+        point3 = self.coordinates_to_pixel((self.board_size - 1, (self.board_size - 1) * 2))
+        point3 = [point3[0] + offset, point3[1]]
+        point4 = self.coordinates_to_pixel(((self.board_size - 1) * 2, self.board_size - 1))
+        point4 = [point4[0] + z1, point4[1] + z2]
+        point5 = self.coordinates_to_pixel(((self.board_size - 1) * 2, 0))
+        point5 = [point5[0] - z1, point5[1] + z2]
+        point6 = self.coordinates_to_pixel((self.board_size - 1, 0))
+        point6 = [point6[0] - offset, point6[1]]
+
+        pygame.draw.polygon(self.game.game_canvas, self.board_bg_color, (point1, point2, point3, point4, point5, point6))
 
     def draw_rubber_bands(self):
         for path in self.paths:

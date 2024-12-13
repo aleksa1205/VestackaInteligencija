@@ -44,8 +44,9 @@ class Button:
             if not self.active:
                 self.top_color = self.hover_color
             if pygame.mouse.get_pressed()[0] and not self.pressed:
-               self.pressed = True
-               return True
+                self.game.button_click_sound.play()
+                self.pressed = True
+                return True
         elif not self.active:
             self.top_color = self.button_color
 

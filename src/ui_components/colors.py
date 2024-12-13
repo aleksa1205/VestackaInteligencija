@@ -41,6 +41,7 @@ blue_color_800 = '#02215e'
 blue_color_900 = '#011033'
 
 neutral_color_100 = '#f4f6fa'
+neutral_color_150 = '#e0e3ea'
 neutral_color_200 = '#c2c8d2'
 neutral_color_300 = '#8e98a8'
 neutral_color_400 = '#6a788f'
@@ -53,10 +54,10 @@ neutral_color_900 = '#0c1626'
 whiteish = (220, 221, 216, 255)
 gray_transparent = (200, 200, 200, 5)
 transparent = (255, 255, 255, 0)
-player1_color = blue_color_500
+player1_color = main_color_500
 player2_color = red_color_500
 ai_color = green_color_500
 
-rubber_band_color = neutral_color_200
-bg_color = neutral_color_100
-pause_menu_color = gray_transparent
+rubber_band_color = neutral_color_100
+bg_color = neutral_color_150
+menu_color = gray_transparent

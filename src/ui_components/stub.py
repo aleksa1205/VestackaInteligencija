@@ -2,7 +2,7 @@
 from pygame.rect import RectType
 
 from src.ui_components.colors import neutral_color_500, neutral_color_900, neutral_color_800, neutral_color_700, \
-    neutral_color_400
+    neutral_color_400, neutral_color_100, neutral_color_200
 
 
 class Stub:
@@ -16,7 +16,7 @@ class Stub:
 
         self.game = game
         self.pos = self.coordinates_to_pixel(index)
-        self.default_color = neutral_color_900
+        self.default_color = neutral_color_800
         self.color = self.default_color
         self.hover_color = neutral_color_400
         self.active_color = neutral_color_900
@@ -29,7 +29,8 @@ class Stub:
         pass
 
     def render(self):
-        pygame.draw.circle(self.game.game_canvas, self.color, self.pos, self.radius)
+        pygame.draw.circle(self.game.game_canvas, neutral_color_200, self.pos, self.radius)
+        pygame.draw.circle(self.game.game_canvas, self.color, self.pos, self.radius - 1)
 
     def check_click(self):
         if self.clicked: self.color = self.active_color
