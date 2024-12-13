@@ -40,7 +40,7 @@ class Game:
         self.screen.blit(pygame.transform.scale(self.game_canvas, (self.SCREEN_WIDTH, self.SCREEN_HEIGHT)), (0, 0))
 
         pygame.display.update()
-        self.clock.tick(60)
+        self.clock.tick(244)
 
     def get_dt(self):
         now = time.time()

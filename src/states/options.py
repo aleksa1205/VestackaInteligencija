@@ -1,10 +1,10 @@
-﻿from src.UI_Components.colors import whiteish, bg_color
+﻿from src.ui_components.colors import whiteish, bg_color
 from src.states.game_world import GameWorld
 from src.states.state import State
 import pygame
 
-from src.UI_Components import Button
-from src.UI_Components.radio_group import RadioGroup
+from src.ui_components import Button
+from src.ui_components.radio_group import RadioGroup
 
 class Options(State):
     def __init__(self, game):

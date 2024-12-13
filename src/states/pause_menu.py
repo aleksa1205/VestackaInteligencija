@@ -1,8 +1,8 @@
 ﻿import pygame
 from src.states.state import State
 from src.states.game_world import GameWorld
-from src.UI_Components import Button
-from src.UI_Components.colors import pause_menu_color
+from src.ui_components import Button
+from src.ui_components.colors import pause_menu_color
 
 class PauseMenu(State):
     def __init__(self, game):
