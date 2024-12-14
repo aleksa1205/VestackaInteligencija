@@ -17,6 +17,8 @@ class ChangePlayer(State):
         self.time_per_stub = self.duration / self.total_stubs
         self.stubs_colored = 0
 
+        self.game.success_sound.play()
+
     def update(self, delta_time, events):
         elapsed_time = pygame.time.get_ticks() - self.start_time
 

@@ -11,7 +11,8 @@ class Board:
     def __init__(self, game, board_size, shared_data):
         self.game = game
         self.board_size = board_size
-        self.d = 50 if self.board_size < 8 else 43
+        self.d = None
+        self.get_d_for_board_size()
         self.h = self.d * sqrt(3) / 2
         self.stub_radius = 6
         self.rubber_band_color = rubber_band_color
@@ -51,7 +52,7 @@ class Board:
                     self.selected_stubovi.clear()
 
         for stub in self.stubovi:
-            if stub.check_click():
+            if stub.check_click(player1_color if self.shared_data['current_player'] else player2_color):
                 self.selected_stubovi.append(stub)
 
         # Izabrana su 2 stuba, znaci odigraj potez
@@ -74,6 +75,14 @@ class Board:
         self.draw_triangles()
 
     # Pomocne funkcije
+    def get_d_for_board_size(self):
+        if self.board_size == 4: self.d = 60
+        elif self.board_size == 5: self.d = 55
+        elif self.board_size == 6: self.d = 50
+        elif self.board_size == 7: self.d = 43
+        elif self.board_size == 8: self.d = 40
+        else: self.d = 45
+
     def initialize_stubovi_and_graph(self):
         for i in range(2 * self.board_size - 1):
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
@@ -149,7 +158,7 @@ class Board:
 
     def make_move(self, start: tuple, end: tuple):
         if self.check_length(start, end) is False:
-            new_state = Transparent(self.game, "Put nije duzine 3!", self.shared_data)
+            new_state = Transparent(self.game, "Rubber band must go through 4 pegs!", self.shared_data)
             new_state.enter_state()
             return
 
@@ -172,7 +181,7 @@ class Board:
         if node_desno == end:
             path = tuple(desni)
             if path in self.paths:
-                new_state = Transparent(self.game, "Isti put je vec formiran!", self.shared_data)
+                new_state = Transparent(self.game, "There is already rubber band on those pegs!", self.shared_data)
                 new_state.enter_state()
                 return
             self.paths.add(path)
@@ -182,7 +191,7 @@ class Board:
         elif node_d_levo == end:
             path = tuple(d_levi)
             if path in self.paths:
-                new_state = Transparent(self.game, "Isti put je vec formiran!", self.shared_data)
+                new_state = Transparent(self.game, "There is already rubber band on those pegs!", self.shared_data)
                 new_state.enter_state()
                 return
             self.paths.add(path)
@@ -192,7 +201,7 @@ class Board:
         elif node_d_desno == end:
             path = tuple(d_desni)
             if path in self.paths:
-                new_state = Transparent(self.game, "Isti put je vec formiran!", self.shared_data)
+                new_state = Transparent(self.game, "There is already rubber band on those pegs!", self.shared_data)
                 new_state.enter_state()
                 return
             self.paths.add(path)
@@ -200,7 +209,7 @@ class Board:
                 self.graph[i].add(j)
                 self.graph[j].add(i)
         else:
-            new_state = Transparent(self.game, "Potez mora da bude u formatu: Desno, Dole Desno ili Dole Levo!", self.shared_data)
+            new_state = Transparent(self.game, "You can only stretch in those directions: Right, Down Right and Down Left", self.shared_data)
             new_state.enter_state()
             return False
 

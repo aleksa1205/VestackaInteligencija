@@ -67,6 +67,17 @@ class Game:
         # sounds
         button_click = os.path.join(base_dir, '../resources/Sounds/button_click.mp3')
         self.button_click_sound = pygame.mixer.Sound(button_click)
+        rubber_band = os.path.join(base_dir, '../resources/Sounds/rubber_band_sound.mp3')
+        self.rubber_band_sound = pygame.mixer.Sound(rubber_band)
+        error = os.path.join(base_dir, '../resources/Sounds/error.mp3')
+        self.error_sound = pygame.mixer.Sound(error)
+        win1 = os.path.join(base_dir, '../resources/Sounds/win.wav')
+        win2 = os.path.join(base_dir, '../resources/Sounds/win2.wav')
+        self.win_sound = pygame.mixer.Sound(win1)
+        lose = os.path.join(base_dir, '../resources/Sounds/lose.wav')
+        self.lose_sound = pygame.mixer.Sound(lose)
+        success = os.path.join(base_dir, '../resources/Sounds/success.mp3')
+        self.success_sound = pygame.mixer.Sound(success)
 
     def load_states(self):
         self.title_screen = Title(self)

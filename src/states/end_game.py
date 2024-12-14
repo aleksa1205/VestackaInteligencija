@@ -11,6 +11,8 @@ class EndGame(State):
         self.play_again = Button(self.game, 'Play again', (self.game.SCREEN_WIDTH >> 1, 300), rect_point='center')
         self.quit_button = Button(self.game, 'Quit game', (self.game.SCREEN_WIDTH >> 1, 400), rect_point='center')
 
+        self.game.win_sound.play()
+
     def update(self, delta_time, events):
         if self.play_again.check_click():
             end_game = self.exit_state()

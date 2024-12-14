@@ -15,6 +15,8 @@ class Transparent(State):
         self.white_surf = pygame.surface.Surface((self.text_rect.w, self.text_rect.h))
         self.white_rect = self.white_surf.get_rect(center = self.text_rect.center)
 
+        self.game.error_sound.play()
+
         # Stubovi
         self.stubovi = shared_data['stubovi']
         self.total_stubs = len(self.stubovi)
