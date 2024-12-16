@@ -28,7 +28,7 @@ class TriangleUtils:
 
     @staticmethod
     def draw_triangles(surface, board):
-        for cycle in board.player1_set:
+        for cycle in board.game_state.player_triangles['player1']:
             upside_down = False
             if cycle[0][0] == cycle[1][0]:
                 x, y = coordinates_to_pixel(board, cycle[2])
@@ -42,7 +42,7 @@ class TriangleUtils:
 
             TriangleUtils.draw_traingle(surface, (center_x, center_y), player1_color, board.d, board.stub_radius, upside_down)
 
-        for cycle in board.player2_set:
+        for cycle in board.game_state.player_triangles['player2']:
             upside_down = False
             if cycle[0][0] == cycle[1][0]:
                 x, y = coordinates_to_pixel(board, cycle[2])
