@@ -1,6 +1,6 @@
 from src.states.change_player import ChangePlayer
 from src.states.state import State
-from src.functionality.board import Board
+from src.board_logic.board import Board
 import pygame.display
 from src.ui_components.colors import bg_color, player1_color, player2_color, main_color_600
 
@@ -59,16 +59,16 @@ class GameWorld(State):
 
 
     def render(self, surface):
-        self.game.game_canvas.fill(bg_color)
+        surface.fill(bg_color)
         # nadji tacke
-        self.board.render()
+        self.board.render(surface)
 
-        self.game.game_canvas.blit(self.player_turn_surf, self.player_turn_rect)
-        self.game.game_canvas.blit(self.player1_points_surf, self.player1_points_rect)
-        self.game.game_canvas.blit(self.player2_points_surf, self.player2_points_rect)
+        surface.blit(self.player_turn_surf, self.player_turn_rect)
+        surface.blit(self.player1_points_surf, self.player1_points_rect)
+        surface.blit(self.player2_points_surf, self.player2_points_rect)
 
         if self.shared_data['last_turn']:
-            self.game.game_canvas.blit(self.last_turn_surf, self.last_turn_rect)
+            surface.blit(self.last_turn_surf, self.last_turn_rect)
 
         if self.shared_data['change_player_state']:
             change_player_state = ChangePlayer(self.game, self.shared_data)
