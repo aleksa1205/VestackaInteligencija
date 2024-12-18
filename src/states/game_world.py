@@ -1,12 +1,12 @@
 from src.states.change_player import ChangePlayer
+from src.states.game_config import GameConfig
 from src.states.state import State
 from src.board_logic.board import Board
 import pygame.display
 from src.ui_components.colors import bg_color, player1_color, player2_color, main_color_600
 
-
 class GameWorld(State):
-    def __init__(self, game, board_size, plays_first):
+    def __init__(self, game, game_config : GameConfig):
         super().__init__(game)
         pygame.display.set_caption('Triggle')
 
@@ -16,10 +16,8 @@ class GameWorld(State):
         }
 
         # Board
-        self.board_size = board_size
-        self.plays_first = plays_first
-        self.board = Board(game, board_size, self.shared_data)
-        self.board_size = board_size
+        self.game_config = game_config
+        self.board = Board(game, game_config, self.shared_data)
 
         # Player Turn
         self.player_turn_surf, self.player_turn_rect = None, None
@@ -30,7 +28,9 @@ class GameWorld(State):
         self.pause = False
 
         print('Game started...')
-        print(self.board_size, self.plays_first)
+        print('Board Size: ' + self.game_config.board_size.__str__())
+        print('Current Player: ' + self.game_config.current_player.__str__())
+        print('Game Mode: ' + self.game_config.mode.name)
 
     def update(self, delta_time, events):
         self.board.update(events)

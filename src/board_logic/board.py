@@ -2,18 +2,21 @@ from typing import List
 import pygame
 from math import sqrt
 
+from src.board_logic.board_utility import get_right_peg, get_bot_right_peg, get_bot_left_peg
 from src.board_logic.ui_elements.board_background import BoardBackground
 from src.board_logic.game_state import GameState
 from src.board_logic.ui_elements.rubber_band_utils import RubberBandUtils
 from src.board_logic.ui_elements.triangle_utils import TriangleUtils
+from src.states.game_config import GameConfig
 from src.ui_components.colors import rubber_band_color, player1_color, player2_color
 from src.board_logic.ui_elements.stub import Stub
 from src.states.transparent import Transparent
 
 class Board:
-    def __init__(self, game, board_size, shared_data):
+    def __init__(self, game, game_config : GameConfig, shared_data):
         self.game = game
-        self.board_size = board_size
+        self.game_config = game_config
+        self.board_size = game_config.board_size
         self.d = 0
         self.init_d()
         self.h = self.d * sqrt(3) / 2
@@ -26,10 +29,13 @@ class Board:
 
         self.message_start_time = None
         # Funckionalnosti
-        self.game_state = GameState(board_size)
         self.pegs = []
+        # pamti samo indekse board-a, koristi se da bi prosledio game state-u
+        self.peg_indexes = []
         self.pegs_init()
         self.selected_pegs : List[Stub] = []
+
+        self.game_state = GameState(self.board_size, self.peg_indexes, game_config.current_player)
 
     # Metode klase
     def update(self, events):
@@ -77,31 +83,23 @@ class Board:
         for i in range(2 * self.board_size - 1):
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
                 self.pegs.append(Stub(self.game, (i, j), self.stub_radius, self.board_size, self.d, self.h, self.x_start, self.y_start))
+                self.peg_indexes.append((i, j))
         self.shared_data['pegs'] = self.pegs
 
-    def get_right_peg(self, coordinates):
-        return coordinates[0], coordinates[1] + 1
-
-    def get_bot_right_peg(self, coordinates):
-        x = coordinates[0]
-        y = coordinates[1]
-        return x + 1, y if x >= self.board_size - 1 else y + 1
-
-    def get_bot_left_peg(self, coordinates):
-        x = coordinates[0]
-        y = coordinates[1]
-        return x + 1, y - 1 if x >= self.board_size - 1 else y
-
-    # direction je jedna od gornje tri funckije
     def get_end_peg(self, start, direction):
         curr_peg = start
         path = [start]
 
         for i in range(3):
-            curr_peg = direction(curr_peg)
+            curr_peg = direction(self.board_size, curr_peg)
             path.append(curr_peg)
 
         return tuple(path), curr_peg
+
+    def check_length(self, stub1: tuple, stub2: tuple):
+        x = abs(stub2[0] - stub1[0])
+        y = abs(stub2[1] - stub1[1])
+        return True if x == 3 or y == 3 else False
 
     def is_valid_input(self, start_peg, end_peg):
         if self.check_length(start_peg, end_peg) is False:
@@ -109,9 +107,9 @@ class Board:
 
         # Idemo u sva tri pravca: desno, dole desno i dole levo
         # funkcija nam vraca zadnji stub i putanju do tog stuba
-        right_path, right_end_peg = self.get_end_peg(start_peg, self.get_right_peg)
-        bot_right_path, bot_right_end_peg = self.get_end_peg(start_peg, self.get_bot_right_peg)
-        bot_left_path, bot_left_end_peg = self.get_end_peg(start_peg, self.get_bot_left_peg)
+        right_path, right_end_peg = self.get_end_peg(start_peg, get_right_peg)
+        bot_right_path, bot_right_end_peg = self.get_end_peg(start_peg, get_bot_right_peg)
+        bot_left_path, bot_left_end_peg = self.get_end_peg(start_peg, get_bot_left_peg)
 
         # proveravamo da li je drugi selektovan stub jedan on pronadjenih
         if end_peg == right_end_peg: result = right_path
@@ -142,7 +140,9 @@ class Board:
         # Renderujemo novi state za uspesno odigran potez
         self.shared_data['turn_played'] = True
 
-    def check_length(self, stub1: tuple, stub2: tuple):
-        x = abs(stub2[0] - stub1[0])
-        y = abs(stub2[1] - stub1[1])
-        return True if x == 3 or y == 3 else False
+        # Generismo sve moguce poteze za minmax algo koji nam kasnije treba
+        all_moves = self.game_state.generate_all_possible_moves()
+        print(self.game_state.paths)
+        print()
+        for move in all_moves:
+            print(move.last_move)

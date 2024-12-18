@@ -27,7 +27,7 @@ class Transparent(State):
         elapsed_time = pygame.time.get_ticks() - self.time
 
         # Racuna koliko stubova boji ovog frejma
-        new_stubs_colored = min(self.total_pegs, int(elapsed_time / self.total_pegs))
+        new_stubs_colored = min(self.total_pegs, int(elapsed_time / self.time_per_peg))
 
 
         for i in range(self.stubs_colored, new_stubs_colored):
