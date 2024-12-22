@@ -140,7 +140,7 @@ class Board:
         # Renderujemo novi state za uspesno odigran potez
         self.shared_data['turn_played'] = True
 
-        # Generismo sve moguce poteze za minmax algo koji nam kasnije treba
+        # Generismo sve moguce poteze za minmax algo koji ce nam kasnije biti potreban
         all_moves = self.game_state.generate_all_possible_moves()
         print(self.game_state.paths)
         print()
