@@ -1,4 +1,5 @@
-﻿from src.ui_components.colors import whiteish, bg_color
+﻿from src.states.game_config import GameConfig, GameMode
+from src.ui_components.colors import whiteish, bg_color
 from src.states.game_world import GameWorld
 from src.states.state import State
 import pygame
@@ -16,7 +17,7 @@ class Options(State):
         self.pvp_surf_active = False
 
         # who will play first
-        self.plays_first = ['ai', 'player']
+        self.game_config = GameConfig()
 
         self.text_surf = self.game.title_font.render('Options', True, 'Black')
         self.text_rect = self.text_surf.get_rect(midtop=(self.game.GAME_W >> 1, 30))
@@ -39,14 +40,14 @@ class Options(State):
         self.pvp_surf_rect = self.pvp_surf.get_rect(midtop=pvp_rect_pos)
         self.pvp_button = Button(self.game, 'Play against another player', pvp_rect_pos, 300, 40, rect_point='midbottom')
 
-        self.player_first_pvp_button = Button(self.game, 'Player first', ((self.game.GAME_W >> 1) + 300, 250), rect_point='midbottom')
-        self.enemy_first_button = Button(self.game, 'Enemy first', ((self.game.GAME_W >> 1) + 300, 300), rect_point='midbottom')
+        self.player_first_pvp_button = Button(self.game, 'Player 1 first', ((self.game.GAME_W >> 1) + 300, 250), rect_point='midbottom')
+        self.enemy_first_button = Button(self.game, 'Player 2 first', ((self.game.GAME_W >> 1) + 300, 300), rect_point='midbottom')
 
         self.radio_group = RadioGroup([self.ai_button, self.pvp_button])
-        self.plays_first_group = RadioGroup(
+        self.game_config_group = RadioGroup(
             [self.player_first_ai_button, self.ai_first_button, self.player_first_pvp_button, self.enemy_first_button])
         self.radio_group.set_active(self.ai_button)
-        self.plays_first_group.set_active(self.player_first_ai_button)
+        self.game_config_group.set_active(self.player_first_ai_button)
 
         # grid size option
         self.grid_buttons = []
@@ -71,23 +72,28 @@ class Options(State):
             self.radio_group.set_active(self.pvp_button)
 
         if self.player_first_pvp_button.check_click():
-            self.plays_first_group.set_active(self.player_first_pvp_button)
-            self.plays_first = ['pvp', 'player']
+            self.game_config_group.set_active(self.player_first_pvp_button)
+            self.game_config.mode = GameMode.PVP
+            self.game_config.current_player = 1
         if self.player_first_ai_button.check_click():
-            self.plays_first_group.set_active(self.player_first_ai_button)
-            self.plays_first = ['ai', 'player']
+            self.game_config_group.set_active(self.player_first_ai_button)
+            self.game_config.mode = GameMode.P_VS_AI
+            self.game_config.current_player = 1
         if self.ai_first_button.check_click():
-            self.plays_first_group.set_active(self.ai_first_button)
-            self.plays_first = ['ai', 'enemy']
+            self.game_config_group.set_active(self.ai_first_button)
+            self.game_config.mode = GameMode.P_VS_AI
+            self.game_config.current_player = 2
         if self.enemy_first_button.check_click():
-            self.plays_first_group.set_active(self.enemy_first_button)
-            self.plays_first = ['pvp', 'enemy']
+            self.game_config_group.set_active(self.enemy_first_button)
+            self.game_config.mode = GameMode.PVP
+            self.game_config.current_player = 2
 
         if self.back_btn.check_click():
             self.exit_state()
         if self.play_btn.check_click():
             active_button = self.grid_buttons_group.get_active()
-            new_state = GameWorld(self.game, active_button.value, self.plays_first)
+            self.game_config.board_size = active_button.value
+            new_state = GameWorld(self.game, self.game_config)
             new_state.enter_state()
 
     def render(self, surface):

@@ -32,13 +32,13 @@ class Stub:
         pygame.draw.circle(self.game.game_canvas, neutral_color_200, self.pos, self.radius)
         pygame.draw.circle(self.game.game_canvas, self.color, self.pos, self.radius - 1)
 
-    def check_click(self):
+    def check_click(self, hover_color):
         if self.clicked: self.color = self.active_color
 
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
             if not self.clicked:
-                self.color = self.hover_color
+                self.color = hover_color
             if pygame.mouse.get_pressed()[0] and not self.clicked:
                 self.clicked = True
                 return True
