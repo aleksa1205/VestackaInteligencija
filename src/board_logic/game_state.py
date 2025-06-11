@@ -2,6 +2,14 @@
 
 from src.board_logic.board_utility import get_right_peg, get_bot_left_peg, get_bot_right_peg
 
+# TODO
+# 1. funkcija koja generise stablo za sve poteze dubine N (generate_graph_state)
+# 2. min i max funkcija
+# 3. min-max funkcija
+# 4. alpha-beta pruning
+# 5. ako je mnogo sporo optimizacija
+# 6. refactor
+
 class GameState:
     def __init__(self, board_size, peg_indexes, current_player):
 
@@ -50,6 +58,7 @@ class GameState:
 
     # Menja game state ali sa kopijem instance i vraca izmenjenu verziju
     # Mora ovo da se optimizuje jer deepcopy je jako skupa operacija pogotovo ako se provlaci kroz veliku petlju
+    # (n - 1) * 3 max
     def get_new_state(self, peg_path):
         g_state_copy = copy.deepcopy(self)
 
@@ -61,9 +70,10 @@ class GameState:
 
         return g_state_copy
 
-    def generate_all_possible_moves(self):
+    def generate_all_possible_states(self):
         all_moves = []
 
+        # proveri da li path postoji, mozda ovde da se prebaci
         for peg_index in self.peg_indexes:
             self.__add_new_state(peg_index, get_right_peg, all_moves)
             self.__add_new_state(peg_index, get_bot_left_peg, all_moves)

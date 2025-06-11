@@ -141,8 +141,8 @@ class Board:
         self.shared_data['turn_played'] = True
 
         # Generismo sve moguce poteze za minmax algo koji ce nam kasnije biti potreban
-        all_moves = self.game_state.generate_all_possible_moves()
+        all_moves = self.game_state.generate_all_possible_states()
         print(self.game_state.paths)
         print()
         for move in all_moves:
-            print(move.last_move)
+            print(move.player_points)

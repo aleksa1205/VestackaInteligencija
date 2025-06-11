@@ -39,12 +39,12 @@ for peg in pegs:
     print(peg.__str__() + ': ')
 
     path, end_peg = get_end_peg(b_size, peg, get_right_peg)
-    if not path: print('Ne moze desno majmune')
+    if not path: print('Ne moze desno')
 
     path, end_peg = get_end_peg(b_size, peg, get_bot_right_peg)
-    if not path: print('Ne moze dole desno majmune')
+    if not path: print('Ne moze dole desno')
 
     path, end_peg = get_end_peg(b_size, peg, get_bot_left_peg)
-    if not path: print('Ne moze dole levo majmune')
+    if not path: print('Ne moze dole levo')
 
     print()
