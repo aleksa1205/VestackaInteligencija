@@ -1,6 +1,6 @@
 from typing import List
 import pygame
-from math import sqrt
+from math import sqrt, inf
 
 from src.board_logic.board_utility import get_right_peg, get_bot_right_peg, get_bot_left_peg
 from src.board_logic.ui_elements.board_background import BoardBackground
@@ -141,8 +141,62 @@ class Board:
         self.shared_data['turn_played'] = True
 
         # Generismo sve moguce poteze za minmax algo koji ce nam kasnije biti potreban
-        all_moves = self.game_state.generate_all_possible_states()
-        print(self.game_state.paths)
-        print()
-        for move in all_moves:
-            print(move.player_points)
+        moves = []
+        score = minmax(self.game_state, 2, True, moves)
+        print(score)
+        print(moves)
+
+
+# TODO this will change
+def evaluate_board(game_state: GameState):
+    min_points = game_state.player_points['player1']
+    max_points = game_state.player_points['player2']
+
+    return max_points - min_points, game_state.last_move
+
+
+def max_player(game_state: GameState, depth, is_max: bool, moves):
+    best_score = - inf
+    best_move = ()
+    possible_states = game_state.generate_all_possible_states()
+    for state in possible_states:
+        score, winning_move = minmax(state, depth - 1, not is_max, moves)
+        if score > best_score:
+            best_move = winning_move
+            best_score = score
+        # best_score = max(best_score, score)
+
+    moves.append(best_move)
+    return best_score
+
+
+def min_player(game_state: GameState, depth, is_min: bool, moves):
+    best_score = inf
+    best_move = ()
+    possible_states = game_state.generate_all_possible_states()
+    for state in possible_states:
+        score, winning_move = minmax(state, depth - 1, not is_min, moves)
+        if score < best_score:
+            best_move = winning_move
+            best_score = score
+        # best_score = min(best_score, score)
+
+    moves.append(best_move)
+    return best_score
+
+
+def minmax(game_state: GameState, depth, is_max: bool, moves):
+    # will return partial scores
+    if depth <= 0:
+        score, best_move = evaluate_board(game_state)
+        #moves.append(best_move)
+        return score, best_move
+
+    if is_max:
+        best_max_score = max_player(game_state, depth , is_max, moves)
+        return best_max_score, game_state.last_move
+        # best_score = max(best_max_score, best_score)
+    else:
+        best_min_score = min_player(game_state, depth, is_max, moves)
+        return best_min_score, game_state.last_move
+        # best_score = min(best_min_score, best_score)

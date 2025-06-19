@@ -1,4 +1,5 @@
 ﻿import copy
+import math
 
 from src.board_logic.board_utility import get_right_peg, get_bot_left_peg, get_bot_right_peg
 
@@ -9,6 +10,9 @@ from src.board_logic.board_utility import get_right_peg, get_bot_left_peg, get_b
 # 4. alpha-beta pruning
 # 5. ako je mnogo sporo optimizacija
 # 6. refactor
+
+# min max function params: board/board size, depth, isMax, score, deltaScore
+
 
 class GameState:
     def __init__(self, board_size, peg_indexes, current_player):
@@ -143,3 +147,6 @@ class GameState:
     @staticmethod
     def __change_player(g_state):
         g_state.current_player = 2 if g_state.current_player == 1 else 1
+
+
+
