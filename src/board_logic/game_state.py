@@ -3,6 +3,7 @@ import math
 
 from src.board_logic.board_utility import get_right_peg, get_bot_left_peg, get_bot_right_peg
 
+
 # TODO
 # 1. funkcija koja generise stablo za sve poteze dubine N (generate_graph_state)
 # 2. min i max funkcija
@@ -84,7 +85,7 @@ class GameState:
             self.__add_new_state(peg_index, get_bot_right_peg, all_moves)
 
         return all_moves
-        #self.all_possible_moves = all_moves
+        # self.all_possible_moves = all_moves
 
     def __add_new_state(self, start, direction, all_moves):
         path = self.__get_valid_peg_path(self.board_size, start, direction)
@@ -136,8 +137,10 @@ class GameState:
                     if neighbors[j] in g_state.graph[neighbors[i]]:
                         # prvo proverimo da li je dati ciklus u nekom od setova
                         cycle = tuple(sorted((node, neighbors[i], neighbors[j])))
-                        if tuple(cycle) not in g_state.player_triangles['player1'] and tuple(cycle) not in g_state.player_triangles['player2']:
-                            g_state.player_triangles['player1'].add(cycle) if g_state.current_player == 1 else g_state.player_triangles['player2'].add(cycle)
+                        if tuple(cycle) not in g_state.player_triangles['player1'] and tuple(cycle) not in \
+                                g_state.player_triangles['player2']:
+                            g_state.player_triangles['player1'].add(cycle) if g_state.current_player == 1 else \
+                            g_state.player_triangles['player2'].add(cycle)
 
     @staticmethod
     def __update_score(g_state):
@@ -147,6 +150,3 @@ class GameState:
     @staticmethod
     def __change_player(g_state):
         g_state.current_player = 2 if g_state.current_player == 1 else 1
-
-
-

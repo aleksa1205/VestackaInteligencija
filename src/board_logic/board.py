@@ -141,62 +141,57 @@ class Board:
         self.shared_data['turn_played'] = True
 
         # Generismo sve moguce poteze za minmax algo koji ce nam kasnije biti potreban
-        moves = []
-        score = minmax(self.game_state, 2, True, moves)
+        score, best_moves = minmax(self.game_state, 2, -inf, inf, True)
         print(score)
-        print(moves)
+        print(best_moves)
 
 
-# TODO this will change
 def evaluate_board(game_state: GameState):
     min_points = game_state.player_points['player1']
     max_points = game_state.player_points['player2']
+    return max_points - min_points
 
-    return max_points - min_points, game_state.last_move
 
+def max_player(game_state: GameState, depth, alpha, beta):
+    best_score = -inf
+    best_path = []
 
-def max_player(game_state: GameState, depth, is_max: bool, moves):
-    best_score = - inf
-    best_move = ()
-    possible_states = game_state.generate_all_possible_states()
-    for state in possible_states:
-        score, winning_move = minmax(state, depth - 1, not is_max, moves)
+    for state in game_state.generate_all_possible_states():
+        score, path = minmax(state, depth - 1, alpha, beta, is_max=False)
         if score > best_score:
-            best_move = winning_move
             best_score = score
-        # best_score = max(best_score, score)
+            best_path = [state.last_move] + path
 
-    moves.append(best_move)
-    return best_score
+        alpha = max(alpha, best_score)
+
+        if beta <= alpha:
+            break
+
+    return best_score, best_path
 
 
-def min_player(game_state: GameState, depth, is_min: bool, moves):
+def min_player(game_state: GameState, depth, alpha, beta):
     best_score = inf
-    best_move = ()
-    possible_states = game_state.generate_all_possible_states()
-    for state in possible_states:
-        score, winning_move = minmax(state, depth - 1, not is_min, moves)
+    best_path = []
+
+    for state in game_state.generate_all_possible_states():
+        score, path = minmax(state, depth - 1, alpha, beta, is_max=True)
         if score < best_score:
-            best_move = winning_move
             best_score = score
-        # best_score = min(best_score, score)
+            best_path = [state.last_move] + path
 
-    moves.append(best_move)
-    return best_score
+        beta = min(beta, best_score)
+
+        if beta <= alpha:
+            break
+    return best_score, best_path
 
 
-def minmax(game_state: GameState, depth, is_max: bool, moves):
-    # will return partial scores
+def minmax(game_state: GameState, depth, alpha, beta, is_max: bool):
     if depth <= 0:
-        score, best_move = evaluate_board(game_state)
-        #moves.append(best_move)
-        return score, best_move
+        return evaluate_board(game_state), []
 
     if is_max:
-        best_max_score = max_player(game_state, depth , is_max, moves)
-        return best_max_score, game_state.last_move
-        # best_score = max(best_max_score, best_score)
+        return max_player(game_state, depth, alpha, beta)
     else:
-        best_min_score = min_player(game_state, depth, is_max, moves)
-        return best_min_score, game_state.last_move
-        # best_score = min(best_min_score, best_score)
+        return min_player(game_state, depth, alpha, beta)
