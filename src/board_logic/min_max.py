@@ -2,10 +2,24 @@
 from src.board_logic.game_state import GameState
 from math import inf
 
-def evaluate_board(game_state: GameState):
-    min_points = game_state.player_points['player1']
-    max_points = game_state.player_points['player2']
-    return max_points - min_points
+def evaluate_board(game_state):
+    # Points difference
+    points = game_state.player_points['player2'] - game_state.player_points['player1']
+
+    # Triangle difference
+    triangles = len(game_state.player_triangles['player2']) - len(game_state.player_triangles['player1'])
+
+    # Mobility (number of possible moves)
+    original_player = game_state.current_player
+    game_state.current_player = 1
+    player1_moves = len(game_state.generate_all_possible_states())
+    game_state.current_player = 2
+    player2_moves = len(game_state.generate_all_possible_states())
+    game_state.current_player = original_player
+    mobility = player2_moves - player1_moves
+
+    # Weighted sum (tune these weights as needed)
+    return 10 * points + 5 * triangles + 2 * mobility
 
 
 def max_player(game_state: GameState, depth, alpha, beta):
