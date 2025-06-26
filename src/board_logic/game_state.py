@@ -48,6 +48,23 @@ class GameState:
         # Pamti zadnje odigran potez
         self.last_move = tuple()
 
+    def graph_edges(self):
+        """
+        Returns a set of all possible edges (as sorted tuples) on the board.
+        """
+        edges = set()
+        for node, neighbors in self.graph.items():
+            for neighbor in neighbors:
+                edge = tuple(sorted((node, neighbor)))
+                edges.add(edge)
+        return edges
+
+    def is_game_over(self):
+        player1_points = self.player_points['player1']
+        player2_points = self.player_points['player2']
+
+        return player1_points >= self.points_to_win or player2_points >= self.points_to_win
+
     def init_graph(self):
         for i in range(2 * self.board_size - 1):
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
@@ -160,7 +177,7 @@ class GameState:
                         if tuple(cycle) not in g_state.player_triangles['player1'] and tuple(cycle) not in \
                                 g_state.player_triangles['player2']:
                             g_state.player_triangles['player1'].add(cycle) if g_state.current_player == 1 else \
-                            g_state.player_triangles['player2'].add(cycle)
+                                g_state.player_triangles['player2'].add(cycle)
 
     @staticmethod
     def __update_score(g_state):
