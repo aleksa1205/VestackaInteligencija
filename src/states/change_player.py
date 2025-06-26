@@ -65,7 +65,7 @@ class ChangePlayer(State):
 
 def run_min_max(self, game_state: GameState):
     print("Min-max started...")
-    best_score, best_path = minmax(game_state, 3, -inf, inf, True)
+    best_score, best_path = minmax(game_state, 4, -inf, inf, True)
     print("Min-max finished!")
     print(best_path)
 

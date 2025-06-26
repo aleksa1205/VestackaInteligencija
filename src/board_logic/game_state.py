@@ -60,19 +60,40 @@ class GameState:
         GameState.__change_player(self)
         self.last_move = (peg_path[0], peg_path[3])
 
-    # Menja game state ali sa kopijem instance i vraca izmenjenu verziju
-    # Mora ovo da se optimizuje jer deepcopy je jako skupa operacija pogotovo ako se provlaci kroz veliku petlju
-    # (n - 1) * 3 max
     def get_new_state(self, peg_path):
-        g_state_copy = copy.deepcopy(self)
-
+        g_state_copy = GameState(self.board_size, list(self.peg_indexes), self.current_player)
+        # Copy only necessary attributes
+        g_state_copy.graph = {k: set(v) for k, v in self.graph.items()}
+        g_state_copy.paths = set(self.paths)
+        g_state_copy.points_to_win = self.points_to_win
+        g_state_copy.player_triangles = {
+            'player1': set(self.player_triangles['player1']),
+            'player2': set(self.player_triangles['player2'])
+        }
+        g_state_copy.player_points = dict(self.player_points)
+        g_state_copy.last_move = tuple(self.last_move)
+        # Now apply the move
         GameState.__add_path(g_state_copy, peg_path)
         GameState.__find_triangles(g_state_copy)
         GameState.__update_score(g_state_copy)
-        # GameState.__change_player(g_state_copy)
+        # GameState.change_player(g_state_copy)
         g_state_copy.last_move = (peg_path[0], peg_path[3])
 
         return g_state_copy
+
+    # Menja game state ali sa kopijem instance i vraca izmenjenu verziju
+    # Mora ovo da se optimizuje jer deepcopy je jako skupa operacija pogotovo ako se provlaci kroz veliku petlju
+    # (n - 1) * 3 max
+    # def get_new_state(self, peg_path):
+    #     g_state_copy = copy.deepcopy(self)
+    #
+    #     GameState.__add_path(g_state_copy, peg_path)
+    #     GameState.__find_triangles(g_state_copy)
+    #     GameState.__update_score(g_state_copy)
+    #     # GameState.__change_player(g_state_copy)
+    #     g_state_copy.last_move = (peg_path[0], peg_path[3])
+    #
+    #     return g_state_copy
 
     def generate_all_possible_states(self):
         all_moves = []
