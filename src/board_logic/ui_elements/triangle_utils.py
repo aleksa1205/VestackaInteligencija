@@ -2,7 +2,7 @@
 from math import sin, cos
 
 from src.board_logic.board_utility import coordinates_to_pixel
-from src.ui_components.colors import player1_color, player2_color
+from src.ui_components.colors import player1_color
 
 
 class TriangleUtils:
@@ -27,7 +27,7 @@ class TriangleUtils:
         pygame.draw.line(surface, color, center, (x - z1, y - z2), width)\
 
     @staticmethod
-    def draw_triangles(surface, board):
+    def draw_triangles(surface, board, player2_color):
         for cycle in board.game_state.player_triangles['player1']:
             upside_down = False
             if cycle[0][0] == cycle[1][0]:

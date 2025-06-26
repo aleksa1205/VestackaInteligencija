@@ -1,7 +1,7 @@
 ﻿import pygame
 import math
 from src.states.state import State
-from src.ui_components.colors import ai_color  # make sure this is defined
+from src.ui_components.colors import ai_color_const  # make sure this is defined
 
 
 def lerp_color(color1, color2, t):
@@ -22,7 +22,7 @@ class AIThinkingState(State):
 
         self.color_start_time = pygame.time.get_ticks()
         self.bounce_speed = 2.5  # adjust speed of bounce
-        self.base_color = ai_color
+        self.base_color = ai_color_const
         self.target_color = (255, 255, 255)  # or (0, 0, 0) for black
 
     def update(self, delta_time, events):

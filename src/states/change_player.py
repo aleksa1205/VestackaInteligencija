@@ -4,7 +4,7 @@ from src.board_logic.game_state import GameState
 from src.states.ai_thinking_state import AIThinkingState
 from src.states.state import State
 import pygame.time
-from src.ui_components.colors import player1_color, player2_color, whiteish, bg_color
+from src.ui_components.colors import player1_color, whiteish, bg_color
 from src.board_logic.min_max import minmax
 from math import inf
 
@@ -41,7 +41,7 @@ class ChangePlayer(State):
         new_stubs_colored = min(self.total_pegs, int(elapsed_time / self.time_per_peg))
 
         for i in range(self.stubs_colored, new_stubs_colored):
-            self.pegs[i].color = player1_color if not self.current_player == 1 else player2_color
+            self.pegs[i].color = player1_color if not self.current_player == 1 else self.game.player2_color
         self.stubs_colored = new_stubs_colored
 
         if elapsed_time >= self.duration:

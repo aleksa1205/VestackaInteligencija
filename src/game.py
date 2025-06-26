@@ -2,6 +2,8 @@
 from pygame import Surface
 from pygame.font import Font
 from src.states.title import Title
+from src.ui_components.colors import player2_color_const
+
 
 class Game:
     def __init__(self):
@@ -14,6 +16,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.dt, self.prev_time = 0, 0
         self.state_stack = []
+        self.player2_color = player2_color_const
         self.load_assets()
         self.load_states()
 

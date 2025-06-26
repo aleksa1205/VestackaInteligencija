@@ -8,7 +8,7 @@ from src.board_logic.game_state import GameState
 from src.board_logic.ui_elements.rubber_band_utils import RubberBandUtils
 from src.board_logic.ui_elements.triangle_utils import TriangleUtils
 from src.states.game_config import GameConfig
-from src.ui_components.colors import rubber_band_color, player1_color, player2_color
+from src.ui_components.colors import rubber_band_color, player1_color, player2_color_const
 from src.board_logic.ui_elements.stub import Stub
 from src.states.transparent import Transparent
 
@@ -46,7 +46,7 @@ class Board:
                     self.selected_pegs.clear()
 
         for peg in self.pegs:
-            if peg.check_click(player1_color if self.game_state.current_player == 1 else player2_color):
+            if peg.check_click(player1_color if self.game_state.current_player == 1 else self.game.player2_color):
                 self.selected_pegs.append(peg)
 
         # Izabrana su 2 stuba, znaci odigraj potez
@@ -63,7 +63,7 @@ class Board:
 
         RubberBandUtils.draw_rubber_bands(surface, self.game_state.paths, self, self.stub_radius, rubber_band_color)
 
-        TriangleUtils.draw_triangles(surface, self)
+        TriangleUtils.draw_triangles(surface, self, self.game.player2_color)
 
         # crtanje povlacenje gumice
         if len(self.selected_pegs) == 1:
