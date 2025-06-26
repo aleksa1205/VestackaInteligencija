@@ -123,7 +123,7 @@ class Board:
 
         return result, ''
 
-    def make_move(self, start_peg: tuple, end_peg: tuple):
+    def make_move(self, start_peg: tuple, end_peg: tuple, redraw_state = None):
         # Provaravamo da li je validan input.
         peg_path, error_msg = self.is_valid_input(start_peg, end_peg)
 
@@ -137,61 +137,13 @@ class Board:
         # Sa tom informacijom mozemo da promenimo Game State
         self.game_state.update_state(peg_path)
 
+        if redraw_state is not None:
+            self.render(redraw_state)
+
         # Renderujemo novi state za uspesno odigran potez
         self.shared_data['turn_played'] = True
 
         # Generismo sve moguce poteze za minmax algo koji ce nam kasnije biti potreban
-        score, best_moves = minmax(self.game_state, 2, -inf, inf, True)
-        print(score)
-        print(best_moves)
-
-
-def evaluate_board(game_state: GameState):
-    min_points = game_state.player_points['player1']
-    max_points = game_state.player_points['player2']
-    return max_points - min_points
-
-
-def max_player(game_state: GameState, depth, alpha, beta):
-    best_score = -inf
-    best_path = []
-
-    for state in game_state.generate_all_possible_states():
-        score, path = minmax(state, depth - 1, alpha, beta, is_max=False)
-        if score > best_score:
-            best_score = score
-            best_path = [state.last_move] + path
-
-        alpha = max(alpha, best_score)
-
-        if beta <= alpha:
-            break
-
-    return best_score, best_path
-
-
-def min_player(game_state: GameState, depth, alpha, beta):
-    best_score = inf
-    best_path = []
-
-    for state in game_state.generate_all_possible_states():
-        score, path = minmax(state, depth - 1, alpha, beta, is_max=True)
-        if score < best_score:
-            best_score = score
-            best_path = [state.last_move] + path
-
-        beta = min(beta, best_score)
-
-        if beta <= alpha:
-            break
-    return best_score, best_path
-
-
-def minmax(game_state: GameState, depth, alpha, beta, is_max: bool):
-    if depth <= 0:
-        return evaluate_board(game_state), []
-
-    if is_max:
-        return max_player(game_state, depth, alpha, beta)
-    else:
-        return min_player(game_state, depth, alpha, beta)
+        # score, best_moves = minmax(self.game_state, 2, -inf, inf, True)
+        # print(score)
+        # print(best_moves)

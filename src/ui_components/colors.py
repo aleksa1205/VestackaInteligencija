@@ -56,7 +56,7 @@ gray_transparent = (200, 200, 200, 5)
 transparent = (255, 255, 255, 0)
 player1_color = main_color_500
 player2_color = red_color_500
-ai_color = green_color_500
+ai_color = (9, 214, 91)
 
 rubber_band_color = neutral_color_100
 bg_color = neutral_color_150

@@ -1,5 +1,4 @@
 ﻿import copy
-import math
 
 from src.board_logic.board_utility import get_right_peg, get_bot_left_peg, get_bot_right_peg
 
@@ -28,7 +27,7 @@ class GameState:
         self.graph = {}
         self.init_graph()
 
-        # pamti putanju gumica
+        # pamti putanju gumica 3211
         self.paths = set()
 
         # Koliko poena je potrebno za pobedu igraca
