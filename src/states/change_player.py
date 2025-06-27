@@ -7,6 +7,7 @@ import pygame.time
 from src.ui_components.colors import player1_color, whiteish, bg_color
 from src.board_logic.min_max import minmax
 from math import inf
+from src.config import board_size_depth_map
 
 
 class ChangePlayer(State):
@@ -64,8 +65,11 @@ class ChangePlayer(State):
 
 
 def run_min_max(self, game_state: GameState):
-    print("Min-max started...")
-    best_score, best_path = minmax(game_state, 1, -inf, inf, True)
+    # depending on the board size it changes the depth of the min-max
+    # large boards take way longer to search through
+    depth = board_size_depth_map[game_state.board_size]
+    print("Min-max started with depth: ", depth)
+    best_score, best_path = minmax(game_state, depth, -inf, inf, True)
     print("Min-max finished!")
     print(best_path)
 
