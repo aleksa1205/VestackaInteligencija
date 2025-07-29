@@ -20,7 +20,7 @@ class Board:
         self.d = 0
         self.init_d()
         self.h = self.d * sqrt(3) / 2
-        self.stub_radius = 6
+        self.peg_radius = 6
         self.shared_data = shared_data
         self.x_start = (self.game.SCREEN_WIDTH - (((self.board_size - 1) * 2) * self.d)) / 2
         self.y_start = (self.game.SCREEN_HEIGHT - (((self.board_size - 1) * 2) * self.h)) / 2
@@ -61,14 +61,14 @@ class Board:
         self.board_bg.render(surface)
         for stub in self.pegs: stub.render()
 
-        RubberBandUtils.draw_rubber_bands(surface, self.game_state.paths, self, self.stub_radius, rubber_band_color)
+        RubberBandUtils.draw_rubber_bands(surface, self.game_state.paths, self, self.peg_radius, rubber_band_color)
 
         TriangleUtils.draw_triangles(surface, self, self.game.player2_color)
 
         # crtanje povlacenje gumice
         if len(self.selected_pegs) == 1:
             mouse_pos = pygame.mouse.get_pos()
-            RubberBandUtils.draw_rubber_band(surface, self.selected_pegs[0].pos, mouse_pos, self.stub_radius, rubber_band_color)
+            RubberBandUtils.draw_rubber_band(surface, self.selected_pegs[0].pos, mouse_pos, self.peg_radius, rubber_band_color)
 
     # Pomocne metode
     def init_d(self):
@@ -79,13 +79,15 @@ class Board:
         elif self.board_size == 8: self.d = 40
         else: self.d = 45
 
+    # Inicijalizuje koordinate subova na tabli
     def pegs_init(self):
         for i in range(2 * self.board_size - 1):
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
-                self.pegs.append(Stub(self.game, (i, j), self.stub_radius, self.board_size, self.d, self.h, self.x_start, self.y_start))
+                self.pegs.append(Stub(self.game, (i, j), self.peg_radius, self.board_size, self.d, self.h, self.x_start, self.y_start))
                 self.peg_indexes.append((i, j))
         self.shared_data['pegs'] = self.pegs
 
+    # Vraca zadnji stub i putanju do njega
     def get_end_peg(self, start, direction):
         curr_peg = start
         path = [start]
@@ -101,6 +103,7 @@ class Board:
         y = abs(stub2[1] - stub1[1])
         return True if x == 3 or y == 3 else False
 
+    # Proverava da li je potez validan i vraca komentar ako nije
     def is_valid_input(self, start_peg, end_peg):
         if self.check_length(start_peg, end_peg) is False:
             return False, "Rubber band must go through 4 pegs!"
@@ -137,13 +140,9 @@ class Board:
         # Sa tom informacijom mozemo da promenimo Game State
         self.game_state.update_state(peg_path)
 
+        # UI bug fix
         if redraw_state is not None:
             self.render(redraw_state)
 
         # Renderujemo novi state za uspesno odigran potez
         self.shared_data['turn_played'] = True
-
-        # Generismo sve moguce poteze za minmax algo koji ce nam kasnije biti potreban
-        # score, best_moves = minmax(self.game_state, 2, -inf, inf, True)
-        # print(score)
-        # print(best_moves)

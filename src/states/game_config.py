@@ -1,6 +1,5 @@
 ﻿import enum
 
-
 class GameConfig:
     def __init__(self):
         self.current_player = 1

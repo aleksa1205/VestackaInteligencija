@@ -1,18 +1,4 @@
-﻿import copy
-
-from src.board_logic.board_utility import get_right_peg, get_bot_left_peg, get_bot_right_peg
-
-
-# TODO
-# 1. funkcija koja generise stablo za sve poteze dubine N (generate_graph_state)
-# 2. min i max funkcija
-# 3. min-max funkcija
-# 4. alpha-beta pruning
-# 5. ako je mnogo sporo optimizacija
-# 6. refactor
-
-# min max function params: board/board size, depth, isMax, score, deltaScore
-
+﻿from src.board_logic.board_utility import get_right_peg, get_bot_left_peg, get_bot_right_peg
 
 class GameState:
     def __init__(self, board_size, peg_indexes, current_player):
@@ -27,7 +13,7 @@ class GameState:
         self.graph = {}
         self.init_graph()
 
-        # pamti putanju gumica 3211
+        # pamti putanju gumica
         self.paths = set()
 
         # Koliko poena je potrebno za pobedu igraca
@@ -48,10 +34,8 @@ class GameState:
         # Pamti zadnje odigran potez
         self.last_move = tuple()
 
+    # Vraca sve moguce ivice na tabli kao sortiran tuple
     def graph_edges(self):
-        """
-        Returns a set of all possible edges (as sorted tuples) on the board.
-        """
         edges = set()
         for node, neighbors in self.graph.items():
             for neighbor in neighbors:
@@ -70,6 +54,7 @@ class GameState:
             for j in range(2 * self.board_size - 1 - abs(self.board_size - 1 - i)):
                 self.graph[(i, j)] = set()
 
+    # Updatuje trenutno game state
     def update_state(self, peg_path):
         GameState.__add_path(self, peg_path)
         GameState.__find_triangles(self)
@@ -77,9 +62,11 @@ class GameState:
         GameState.__change_player(self)
         self.last_move = (peg_path[0], peg_path[3])
 
+    # Immutable verzija update_state funkcije
     def get_new_state(self, peg_path):
         g_state_copy = GameState(self.board_size, list(self.peg_indexes), self.current_player)
-        # Copy only necessary attributes
+
+        # Kopiramo sve atribute iz originalnog game state-a
         g_state_copy.graph = {k: set(v) for k, v in self.graph.items()}
         g_state_copy.paths = set(self.paths)
         g_state_copy.points_to_win = self.points_to_win
@@ -89,7 +76,7 @@ class GameState:
         }
         g_state_copy.player_points = dict(self.player_points)
         g_state_copy.last_move = tuple(self.last_move)
-        # Now apply the move
+
         GameState.__add_path(g_state_copy, peg_path)
         GameState.__find_triangles(g_state_copy)
         GameState.__update_score(g_state_copy)
