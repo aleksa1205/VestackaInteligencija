@@ -7,13 +7,13 @@ from src.ui_components.colors import player1_color
 
 class TriangleUtils:
     @staticmethod
-    def draw_traingle(surface, center, color, d, stub_radius, upside_down):
+    def draw_traingle(surface, center, color, d, peg_radius, upside_down):
         line_length = d / 5
         x = center[0]
         y = center[1]
 
         surface = surface
-        width = stub_radius - 2
+        width = peg_radius - 2
 
         direction = 1 if not upside_down else -1
 
@@ -40,7 +40,7 @@ class TriangleUtils:
                 center_y = y + (2 / 3 * board.h)
                 upside_down = True
 
-            TriangleUtils.draw_traingle(surface, (center_x, center_y), player1_color, board.d, board.stub_radius, upside_down)
+            TriangleUtils.draw_traingle(surface, (center_x, center_y), player1_color, board.d, board.peg_radius, upside_down)
 
         for cycle in board.game_state.player_triangles['player2']:
             upside_down = False
@@ -53,4 +53,4 @@ class TriangleUtils:
                 center_x = x
                 center_y = y + (2 / 3 * board.h)
                 upside_down = True
-            TriangleUtils.draw_traingle(surface, (center_x, center_y), player2_color, board.d, board.stub_radius, upside_down)
+            TriangleUtils.draw_traingle(surface, (center_x, center_y), player2_color, board.d, board.peg_radius, upside_down)
